@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36327.8
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{135EB3BA-BB78-43A8-8BD5-F221A9514FDF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{8089AB3A-74F8-412D-81F9-8ED2A3EA5EC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.Abstraction", "src\DomainSmith.Abstraction\DomainSmith.Abstraction.csproj", "{A5A0CA35-30B7-4BB6-A888-1D96D416AA26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.Abstraction.Tests", "tests\DomainSmith.Abstraction.Tests\DomainSmith.Abstraction.Tests.csproj", "{3D841720-C1AA-4BB6-9EB7-849EE4B23683}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5A0CA35-30B7-4BB6-A888-1D96D416AA26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5A0CA35-30B7-4BB6-A888-1D96D416AA26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5A0CA35-30B7-4BB6-A888-1D96D416AA26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5A0CA35-30B7-4BB6-A888-1D96D416AA26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D841720-C1AA-4BB6-9EB7-849EE4B23683}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D841720-C1AA-4BB6-9EB7-849EE4B23683}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D841720-C1AA-4BB6-9EB7-849EE4B23683}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D841720-C1AA-4BB6-9EB7-849EE4B23683}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A5A0CA35-30B7-4BB6-A888-1D96D416AA26} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{3D841720-C1AA-4BB6-9EB7-849EE4B23683} = {135EB3BA-BB78-43A8-8BD5-F221A9514FDF}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D5DB74A5-D8E6-4B19-B217-5A02834A0987}
+	EndGlobalSection
+EndGlobal
