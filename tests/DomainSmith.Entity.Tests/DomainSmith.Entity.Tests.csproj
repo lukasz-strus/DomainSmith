@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DomainSmith.Abstraction\DomainSmith.Abstraction.csproj" />
+    <ProjectReference Include="..\..\src\DomainSmith.Entity\DomainSmith.Entity.csproj" />
   </ItemGroup>
 
   <ItemGroup>
