@@ -1,2 +1,11 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using DomainSmith.Abstraction.Core.Primitives;
+using DomainSmith.Entity;
+
 Console.WriteLine("Hello, World!");
+
+
+[Entity]
+public partial class TestEntity : Entity<int>
+{
+
+}
