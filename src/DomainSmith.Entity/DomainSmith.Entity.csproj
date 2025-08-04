@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-      <TargetFramework>netstandard2.0</TargetFramework>
+	<PropertyGroup>
+	  <TargetFramework>netstandard2.0</TargetFramework> 
 	  <ImplicitUsings>enable</ImplicitUsings>
 	  <LangVersion>latest</LangVersion>
-	    <Nullable>enable</Nullable>
+		<Nullable>enable</Nullable>
 	  <Authors>Łukasz Strus</Authors>
-    </PropertyGroup>
+		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />
@@ -14,8 +15,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="DomainSmith.Abstraction.Tests" />
-		<InternalsVisibleTo Include="DomainSmith.Entity" />
+		<ProjectReference Include="..\DomainSmith.Abstraction\DomainSmith.Abstraction.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="DomainSmith.Entity.Tests" />
 	</ItemGroup>
 
 </Project>
