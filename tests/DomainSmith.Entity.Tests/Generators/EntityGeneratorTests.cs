@@ -7,7 +7,6 @@ namespace DomainSmith.Entity.Tests.Generators;
 
 public sealed class EntityGeneratorTests
 {
-
     [Fact]
     public async Task EntityGenerator_ShouldGenerateCode()
     {
@@ -21,20 +20,19 @@ public sealed class EntityGeneratorTests
 
         // Assert
         await Verify(output);
-
     }
 
     private const string InputSource =
-    """
-    using DomainSmith.Abstraction.Core.Primitives;
-    using DomainSmith.Entity;
-    
-    namespace TestNamespace;
-    
-    [Entity]
-    public sealed partial class TestEntity : Entity<int>
-    {
-    
-    }
-    """;
+        """
+        using DomainSmith.Abstraction.Core.Primitives;
+        using DomainSmith.Entity;
+
+        namespace TestNamespace;
+
+        [Entity(typeof(Guid))]
+        public sealed partial class TestEntity
+        {
+
+        }
+        """;
 }

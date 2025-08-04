@@ -1,11 +1,11 @@
-﻿using DomainSmith.Abstraction.Core.Primitives;
-using DomainSmith.Entity;
+﻿using DomainSmith.Entity;
 
-Console.WriteLine("Hello, World!");
+Console.WriteLine("Test");
 
-
-[Entity]
-public partial class TestEntity : Entity<int>
-{
-
-}
+//namespace TestNamespace
+//{
+//    [Entity(typeof(Guid))]
+//    public partial class TestEntity
+//    {
+//    }
+//}
