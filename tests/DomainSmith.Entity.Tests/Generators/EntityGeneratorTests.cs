@@ -24,7 +24,6 @@ public sealed class EntityGeneratorTests
 
     private const string InputSource =
         """
-        using DomainSmith.Abstraction.Core.Primitives;
         using DomainSmith.Entity;
 
         namespace TestNamespace;

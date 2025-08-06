@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DomainSmith.Abstraction.Generators;
 
-public abstract class BaseGenerator<TSyntax, TInfo> : IIncrementalGenerator
+internal abstract class BaseGenerator<TSyntax, TInfo> : IIncrementalGenerator
     where TSyntax : MemberDeclarationSyntax
     where TInfo : class
 {
@@ -34,9 +34,11 @@ public abstract class BaseGenerator<TSyntax, TInfo> : IIncrementalGenerator
         return syntax.AttributeLists.SelectMany(
                 attributeList => attributeList.Attributes,
                 (_, attribute) => context.SemanticModel.GetSymbolInfo(attribute).Symbol as IMethodSymbol)
-            .All(symbol => symbol?.ContainingType.ToDisplayString() != attributeName) ? null : CreateInfo(syntax, context);
+            .All(symbol => symbol?.ContainingType.ToDisplayString() != attributeName)
+            ? null
+            : CreateInfo(syntax, context);
     }
 
-    protected virtual string GetFileName(object info) => 
+    protected virtual string GetFileName(object info) =>
         info.GetType().GetProperty("Name")?.GetValue(info)?.ToString() ?? "Generated";
 }
