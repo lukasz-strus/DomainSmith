@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Text;
 
 namespace DomainSmith.Abstraction.Generators;
