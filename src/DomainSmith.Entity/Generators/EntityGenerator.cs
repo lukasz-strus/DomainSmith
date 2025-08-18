@@ -20,6 +20,7 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
         builder.SetIdValue(GetIdValueExpression(info));
         builder.SetExtensionName(info.Name);
         builder.SetExtensionReference(info.Namespace, info.Name);
+        builder.SetProperties(info.Properties);
 
         var source = builder.Build();
         builder.Clear();
@@ -122,6 +123,14 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
             }
         }
 
+        var properties = classSyntax.Members
+            .OfType<PropertyDeclarationSyntax>()
+            .Select(p => new PropertyInfo(
+                p.Type.ToString(),
+                p.Identifier.Text
+            ))
+            .ToList();
+
         return new ClassToAugment(
             name,
             typeArg,
@@ -130,7 +139,8 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
             idTypeFullName,
             isEntityIdRecord,
             isEntityIdClass,
-            idValueType
+            idValueType,
+            properties
         );
     }
 
@@ -142,7 +152,8 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
         string? idTypeFullName,
         bool isEntityIdRecord,
         bool isEntityIdClass,
-        string? idValueType)
+        string? idValueType,
+        List<PropertyInfo> properties)
     {
         public string Name { get; } = name;
         public string TypeArg { get; } = typeArg;
@@ -152,5 +163,12 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
         public bool IsEntityIdRecord { get; } = isEntityIdRecord;
         public bool IsEntityIdClass { get; } = isEntityIdClass;
         public string? IdValueType { get; } = idValueType;
+        public List<PropertyInfo> Properties { get; } = properties;
+    }
+
+    public sealed class PropertyInfo(string type, string name)
+    {
+        public string Type { get; } = type;
+        public string Name { get; } = name;
     }
 }

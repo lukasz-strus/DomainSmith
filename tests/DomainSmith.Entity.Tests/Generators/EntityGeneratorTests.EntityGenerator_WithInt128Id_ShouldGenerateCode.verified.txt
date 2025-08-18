@@ -16,12 +16,12 @@ partial class TestEntity : Entity<Int128>
 {
     private TestEntity(Int128 id) : base(id)
     {
+       
     }
 
     public static TestEntity? Create()
     {
         OnCreating();
-        if(!TestNamespace.TestEntityExtensions.CanCreate) return null;
     
         var result = new TestEntity((Int128)new Random().Next());
         
@@ -34,10 +34,16 @@ partial class TestEntity : Entity<Int128>
     public void Update()
     {
         OnUpdating();
-        if(!TestNamespace.TestEntityExtensions.CanUpdate) return;
+        
+        
+        
         
         OnUpdated();
-        if(!TestNamespace.TestEntityExtensions.CanUpdate) return;
+        if(!TestNamespace.TestEntityExtensions.CanUpdate) 
+        {
+           
+           return;
+        }
     
         return;
     }

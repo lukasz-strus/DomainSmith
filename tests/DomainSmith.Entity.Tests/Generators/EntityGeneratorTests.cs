@@ -7,6 +7,71 @@ namespace DomainSmith.Entity.Tests.Generators;
 
 public sealed class EntityGeneratorTests
 {
+    #region Properties
+
+    [Fact]
+    public async Task EntityGenerator_WithStringProperty_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithStringProperty);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
+
+    private const string InputSourceWithStringProperty =
+        """
+        using DomainSmith.Entity;
+
+        namespace TestNamespace;
+
+        [Entity(typeof(Guid))]
+        public sealed partial class TestEntity
+        {
+            public string Name { get; private set; }
+        }
+        """;
+
+
+    [Fact]
+    public async Task EntityGenerator_WithIntProperty_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithIntProperty);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
+
+    private const string InputSourceWithIntProperty =
+        """
+        using DomainSmith.Entity;
+
+        namespace TestNamespace;
+
+        [Entity(typeof(Guid))]
+        public sealed partial class TestEntity
+        {
+            public int Counter { get; private set; }
+        }
+        """;
+
+    #endregion
+
+    #region EntityId
+
     [Fact]
     public async Task EntityGenerator_WithShortId_ShouldGenerateCode()
     {
@@ -636,4 +701,6 @@ public sealed class EntityGeneratorTests
 
         }
         """;
+
+    #endregion
 }

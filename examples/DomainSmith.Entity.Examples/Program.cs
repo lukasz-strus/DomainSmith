@@ -1,14 +1,21 @@
-﻿using DomainSmith.Abstraction.Core.Primitives;
-using DomainSmith.Entity;
+﻿using DomainSmith.Entity;
+using TestNamespace;
 
-Console.WriteLine("Test");
 
-//namespace TestNamespace
-//{
-//    [Entity(typeof(Int128))]
-//    public partial class TestEntity
-//    {
-//    }
+var testEntity = TestEntity.Create("Test1");
 
-//    public class TestEntityId(UInt16 value) : EntityIdClass<UInt16>(value);
-//}
+Console.WriteLine(testEntity.Name);
+
+testEntity.Update("Test");
+
+Console.WriteLine(testEntity.Name);
+Console.WriteLine("Koniec Testu");
+
+namespace TestNamespace
+{
+    [Entity(typeof(Guid))]
+    public partial class TestEntity
+    {
+        public string Name { get; private set; }
+    }
+}

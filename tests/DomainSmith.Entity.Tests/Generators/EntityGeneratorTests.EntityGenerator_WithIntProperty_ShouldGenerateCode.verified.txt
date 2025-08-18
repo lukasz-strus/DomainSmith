@@ -12,18 +12,18 @@ using System.Text.Json;
 
 namespace TestNamespace;
 
-partial class TestEntity : Entity<long>
+partial class TestEntity : Entity<Guid>
 {
-    private TestEntity(long id) : base(id)
+    private TestEntity(Guid id, int counter) : base(id)
     {
-       
+        Counter = counter;
     }
 
-    public static TestEntity? Create()
+    public static TestEntity? Create(int counter)
     {
-        OnCreating();
+        OnCreating(ref counter);
     
-        var result = new TestEntity((long)new Random().Next());
+        var result = new TestEntity(Guid.NewGuid(), counter);
         
         OnCreated(result);
         if(!TestNamespace.TestEntityExtensions.CanCreate) return null;
@@ -31,27 +31,27 @@ partial class TestEntity : Entity<long>
         return result;
     }
     
-    public void Update()
+    public void Update(int counter)
     {
-        OnUpdating();
+        OnUpdating(ref counter);
         
-        
-        
+        var tmpCounter = Counter;
+        Counter = counter;
         
         OnUpdated();
         if(!TestNamespace.TestEntityExtensions.CanUpdate) 
         {
-           
+           Counter = tmpCounter;
            return;
         }
     
         return;
     }
     
-    static partial void OnCreating();
+    static partial void OnCreating(ref int counter);
     static partial void OnCreated(TestEntity result);
 
-    partial void OnUpdating();
+    partial void OnUpdating(ref int counter);
     partial void OnUpdated();
     
     private void AllowUpdate()
