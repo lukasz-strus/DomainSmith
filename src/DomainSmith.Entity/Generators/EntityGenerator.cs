@@ -125,6 +125,13 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
 
         var properties = classSyntax.Members
             .OfType<PropertyDeclarationSyntax>()
+            .Where(p =>
+            {
+                var symbol = context.SemanticModel.GetDeclaredSymbol(p);
+                return symbol is not null &&
+                       !symbol.GetAttributes().Any(a =>
+                           a.AttributeClass?.ToDisplayString() == typeof(ExcludeFromGenerationAttribute).FullName!);
+            })
             .Select(p => new PropertyInfo(
                 p.Type.ToString(),
                 p.Identifier.Text

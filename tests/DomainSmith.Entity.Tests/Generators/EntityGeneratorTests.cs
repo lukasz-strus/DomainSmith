@@ -38,6 +38,37 @@ public sealed class EntityGeneratorTests
         }
         """;
 
+    [Fact]
+    public async Task EntityGenerator_WithExcludedStringProperty_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithExcludedStringProperty);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
+
+    private const string InputSourceWithExcludedStringProperty =
+        """
+        using DomainSmith.Entity;
+
+        namespace TestNamespace;
+
+        [Entity(typeof(Guid))]
+        public sealed partial class TestEntity
+        {
+            [ExcludeFromGeneration] public string Name { get; private set; }
+            
+            public string Name2 { get; private set; }
+        }
+        """;
+
 
     [Fact]
     public async Task EntityGenerator_WithIntProperty_ShouldGenerateCode()
@@ -87,6 +118,19 @@ public sealed class EntityGeneratorTests
         await Verify(output);
     }
 
+    private const string InputSourceWithShortId =
+        """
+        using DomainSmith.Entity;
+
+        namespace TestNamespace;
+
+        [Entity(typeof(short))]
+        public sealed partial class TestEntity
+        {
+
+        }
+        """;
+
 
     [Fact]
     public async Task EntityGenerator_WithValueShortId_ShouldGenerateCode()
@@ -102,312 +146,6 @@ public sealed class EntityGeneratorTests
         // Assert
         await Verify(output);
     }
-
-    [Fact]
-    public async Task EntityGenerator_WithUShortId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithUShortId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-
-    [Fact]
-    public async Task EntityGenerator_WithValueUShortId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueUShortId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-    [Fact]
-    public async Task EntityGenerator_WithIntId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithIntId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-
-    [Fact]
-    public async Task EntityGenerator_WithValueIntId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueIntId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-    [Fact]
-    public async Task EntityGenerator_WithUIntId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithUIntId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-
-    [Fact]
-    public async Task EntityGenerator_WithValueUIntId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueUIntId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-    [Fact]
-    public async Task EntityGenerator_WithLongId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithLongId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-
-    [Fact]
-    public async Task EntityGenerator_WithValueLongId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueLongId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-    [Fact]
-    public async Task EntityGenerator_WithULongId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithULongId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-
-    [Fact]
-    public async Task EntityGenerator_WithValueULongId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueULongId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-    [Fact]
-    public async Task EntityGenerator_WithInt128Id_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithInt128Id);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-
-    [Fact]
-    public async Task EntityGenerator_WithValueInt128Id_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueInt128Id);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-    [Fact]
-    public async Task EntityGenerator_WithUInt128Id_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithUInt128Id);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-
-    [Fact]
-    public async Task EntityGenerator_WithValueUInt128Id_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueUInt128Id);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-    [Fact]
-    public async Task EntityGenerator_WithGuidId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithGuidId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-
-    [Fact]
-    public async Task EntityGenerator_WithValueGuidId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueGuidId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-    [Fact]
-    public async Task EntityGenerator_WithStringId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithStringId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-    [Fact]
-    public async Task EntityGenerator_WithValueStringId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueStringId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-    [Fact]
-    public async Task EntityGenerator_WithClassValueStringId_ShouldGenerateCode()
-    {
-        // Arrange
-        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithClassValueStringId);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
-
-        // Act
-        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
-
-        // Assert
-        await Verify(output);
-    }
-
-    private const string InputSourceWithShortId =
-        """
-        using DomainSmith.Entity;
-
-        namespace TestNamespace;
-
-        [Entity(typeof(short))]
-        public sealed partial class TestEntity
-        {
-
-        }
-        """;
 
     private const string InputSourceWithValueShortId =
         """
@@ -425,6 +163,22 @@ public sealed class EntityGeneratorTests
         }
         """;
 
+    [Fact]
+    public async Task EntityGenerator_WithUShortId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithUShortId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
+
     private const string InputSourceWithUShortId =
         """
         using DomainSmith.Entity;
@@ -437,6 +191,21 @@ public sealed class EntityGeneratorTests
 
         }
         """;
+
+    [Fact]
+    public async Task EntityGenerator_WithValueUShortId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueUShortId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
 
     private const string InputSourceWithValueUShortId =
         """
@@ -454,6 +223,22 @@ public sealed class EntityGeneratorTests
         }
         """;
 
+    [Fact]
+    public async Task EntityGenerator_WithIntId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithIntId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
+
     private const string InputSourceWithIntId =
         """
         using DomainSmith.Entity;
@@ -466,6 +251,21 @@ public sealed class EntityGeneratorTests
 
         }
         """;
+
+    [Fact]
+    public async Task EntityGenerator_WithValueIntId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueIntId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
 
     private const string InputSourceWithValueIntId =
         """
@@ -483,6 +283,22 @@ public sealed class EntityGeneratorTests
         }
         """;
 
+    [Fact]
+    public async Task EntityGenerator_WithUIntId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithUIntId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
+
     private const string InputSourceWithUIntId =
         """
         using DomainSmith.Entity;
@@ -495,6 +311,21 @@ public sealed class EntityGeneratorTests
 
         }
         """;
+
+    [Fact]
+    public async Task EntityGenerator_WithValueUIntId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueUIntId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
 
     private const string InputSourceWithValueUIntId =
         """
@@ -512,6 +343,21 @@ public sealed class EntityGeneratorTests
         }
         """;
 
+    [Fact]
+    public async Task EntityGenerator_WithLongId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithLongId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
     private const string InputSourceWithLongId =
         """
         using DomainSmith.Entity;
@@ -524,6 +370,22 @@ public sealed class EntityGeneratorTests
 
         }
         """;
+
+
+    [Fact]
+    public async Task EntityGenerator_WithValueLongId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueLongId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
 
     private const string InputSourceWithValueLongId =
         """
@@ -541,6 +403,22 @@ public sealed class EntityGeneratorTests
         }
         """;
 
+    [Fact]
+    public async Task EntityGenerator_WithULongId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithULongId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
+
     private const string InputSourceWithULongId =
         """
         using DomainSmith.Entity;
@@ -553,6 +431,21 @@ public sealed class EntityGeneratorTests
 
         }
         """;
+
+    [Fact]
+    public async Task EntityGenerator_WithValueULongId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueULongId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
 
     private const string InputSourceWithValueULongId =
         """
@@ -570,6 +463,22 @@ public sealed class EntityGeneratorTests
         }
         """;
 
+    [Fact]
+    public async Task EntityGenerator_WithInt128Id_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithInt128Id);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
+
     private const string InputSourceWithInt128Id =
         """
         using DomainSmith.Entity;
@@ -582,6 +491,21 @@ public sealed class EntityGeneratorTests
 
         }
         """;
+
+    [Fact]
+    public async Task EntityGenerator_WithValueInt128Id_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueInt128Id);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
 
     private const string InputSourceWithValueInt128Id =
         """
@@ -599,6 +523,22 @@ public sealed class EntityGeneratorTests
         }
         """;
 
+    [Fact]
+    public async Task EntityGenerator_WithUInt128Id_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithUInt128Id);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
+
     private const string InputSourceWithUInt128Id =
         """
         using DomainSmith.Entity;
@@ -611,6 +551,21 @@ public sealed class EntityGeneratorTests
 
         }
         """;
+
+    [Fact]
+    public async Task EntityGenerator_WithValueUInt128Id_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueUInt128Id);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
 
     private const string InputSourceWithValueUInt128Id =
         """
@@ -628,6 +583,22 @@ public sealed class EntityGeneratorTests
         }
         """;
 
+    [Fact]
+    public async Task EntityGenerator_WithGuidId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithGuidId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
+
     private const string InputSourceWithGuidId =
         """
         using DomainSmith.Entity;
@@ -640,6 +611,21 @@ public sealed class EntityGeneratorTests
 
         }
         """;
+
+    [Fact]
+    public async Task EntityGenerator_WithValueGuidId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueGuidId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
 
     private const string InputSourceWithValueGuidId =
         """
@@ -657,6 +643,21 @@ public sealed class EntityGeneratorTests
         }
         """;
 
+    [Fact]
+    public async Task EntityGenerator_WithStringId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithStringId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
     private const string InputSourceWithStringId =
         """
         using DomainSmith.Entity;
@@ -669,6 +670,21 @@ public sealed class EntityGeneratorTests
 
         }
         """;
+
+    [Fact]
+    public async Task EntityGenerator_WithValueStringId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithValueStringId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
 
     private const string InputSourceWithValueStringId =
         """
@@ -685,6 +701,21 @@ public sealed class EntityGeneratorTests
 
         }
         """;
+
+    [Fact]
+    public async Task EntityGenerator_WithClassValueStringId_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceWithClassValueStringId);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+
+        // Assert
+        await Verify(output);
+    }
 
     private const string InputSourceWithClassValueStringId =
         """

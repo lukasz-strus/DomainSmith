@@ -16,7 +16,7 @@ partial class TestEntity : Entity<Guid>
 {
     private TestEntity(Guid id) : base(id)
     {
-       
+        
     }
 
     public static TestEntity? Create()

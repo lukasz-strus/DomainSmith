@@ -16,7 +16,7 @@ partial class TestEntity : Entity<string>
 {
     private TestEntity(string id) : base(id)
     {
-       
+        
     }
 
     public static TestEntity? Create()
