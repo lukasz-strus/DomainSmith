@@ -24,6 +24,8 @@ partial class TestEntity : Entity<string>
         OnCreating();
     
         var result = new TestEntity(Guid.NewGuid().ToString());
+
+        
         
         OnCreated(result);
         if(!TestNamespace.TestEntityExtensions.CanCreate) return null;
@@ -34,6 +36,7 @@ partial class TestEntity : Entity<string>
     internal void Update()
     {
         OnUpdating();
+        
         
         
         
@@ -53,6 +56,9 @@ partial class TestEntity : Entity<string>
 
     partial void OnUpdating();
     partial void OnUpdated();
+
+    
+    
     
     private void AllowUpdate()
     {

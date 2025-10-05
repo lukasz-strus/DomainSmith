@@ -24,6 +24,8 @@ partial class TestEntity : Entity<ushort>
         OnCreating();
     
         var result = new TestEntity((ushort)new Random().Next(0, short.MaxValue));
+
+        
         
         OnCreated(result);
         if(!TestNamespace.TestEntityExtensions.CanCreate) return null;
@@ -34,6 +36,7 @@ partial class TestEntity : Entity<ushort>
     internal void Update()
     {
         OnUpdating();
+        
         
         
         
@@ -53,6 +56,9 @@ partial class TestEntity : Entity<ushort>
 
     partial void OnUpdating();
     partial void OnUpdated();
+
+    
+    
     
     private void AllowUpdate()
     {
