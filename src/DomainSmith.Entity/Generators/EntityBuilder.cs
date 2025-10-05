@@ -104,7 +104,7 @@ internal sealed class EntityBuilder : BaseBuilder
                          {{ctorAssignmentsStr}}
                      }
 
-                     public static {{ClassName}}? Create({{createParamsStr}})
+                     internal static {{ClassName}}? Create({{createParamsStr}})
                      {
                          OnCreating({{onCreatingRefParamsStr}});
                      
@@ -116,7 +116,7 @@ internal sealed class EntityBuilder : BaseBuilder
                          return result;
                      }
                      
-                     public void Update({{createParamsStr}})
+                     internal void Update({{createParamsStr}})
                      {
                          OnUpdating({{onUpdatingRefParamsStr}});
                          

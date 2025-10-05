@@ -19,7 +19,7 @@ partial class TestEntity : Entity<UInt128>
         
     }
 
-    public static TestEntity? Create()
+    internal static TestEntity? Create()
     {
         OnCreating();
     
@@ -31,7 +31,7 @@ partial class TestEntity : Entity<UInt128>
         return result;
     }
     
-    public void Update()
+    internal void Update()
     {
         OnUpdating();
         

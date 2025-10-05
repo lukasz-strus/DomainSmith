@@ -19,7 +19,7 @@ partial class TestEntity : Entity<Guid>
         Counter = counter;
     }
 
-    public static TestEntity? Create(int counter)
+    internal static TestEntity? Create(int counter)
     {
         OnCreating(ref counter);
     
@@ -31,7 +31,7 @@ partial class TestEntity : Entity<Guid>
         return result;
     }
     
-    public void Update(int counter)
+    internal void Update(int counter)
     {
         OnUpdating(ref counter);
         

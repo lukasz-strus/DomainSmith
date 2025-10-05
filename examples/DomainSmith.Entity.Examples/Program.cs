@@ -1,19 +1,26 @@
-﻿using DomainSmith.Entity;
-using TestNamespace;
+﻿using DomainSmith.Entity.Examples.Entities;
+
+var owner = Owner.Create("Łukasz", "Strus", "lukasz.strus@gmail.com",
+    new Address("Ulica", "Warszawa", "mazowieckie", "00-000"));
+
+Console.WriteLine("Id: " + owner?.Id.Value);
+Console.WriteLine("Name: " + owner?.FirstName + " " + owner?.LastName);
+Console.WriteLine("Email: " + owner?.Email);
+Console.WriteLine("Address: " + (owner?.Address is not null
+    ? $"{owner.Address.Street}, {owner.Address.City}, {owner.Address.State} {owner.Address.ZipCode}"
+    : "No address provided"));
+
+owner?.Update("Łukasz1", "Strus1", "lukasz1.strus@gmail.com",
+    new Address("Ulica", "Warszawa", "mazowieckie", "00-000"));
+
+Console.WriteLine("Id: " + owner?.Id.Value);
+Console.WriteLine("Name: " + owner?.FirstName + " " + owner?.LastName);
+Console.WriteLine("Email: " + owner?.Email);
+Console.WriteLine("Address: " + (owner?.Address is not null
+    ? $"{owner.Address.Street}, {owner.Address.City}, {owner.Address.State} {owner.Address.ZipCode}"
+    : "No address provided"));
 
 Console.WriteLine("Koniec Testu");
 
-namespace TestNamespace
-{
-    [Entity(typeof(Guid))]
-    public partial class TestEntity
-    {
-        public string Name { get; private set; }
-        public string Name2 { get; private set; }
-        public int Name3 { get; private set; }
-        public DateTime Name4 { get; private set; }
-        public TestRecord TestRecord { get; private set; }
-    }
-
-    public record TestRecord(string Value);
-}
+//TODO: 1. zamienić Create i Update na metody internal
+//TODO: 2. zastanowić się czy dorobić metody typu SetFirstName, SetLastName itp. czy zostawić tylko Update/Create

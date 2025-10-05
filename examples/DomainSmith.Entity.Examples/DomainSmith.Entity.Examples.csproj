@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DomainSmith.Abstraction\DomainSmith.Abstraction.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true"  />
-    <ProjectReference Include="..\..\src\DomainSmith.Entity\DomainSmith.Entity.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true"  />
+    <ProjectReference Include="..\..\src\DomainSmith.Abstraction\DomainSmith.Abstraction.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+    <ProjectReference Include="..\..\src\DomainSmith.Entity\DomainSmith.Entity.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
   </ItemGroup>
 
 </Project>

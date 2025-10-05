@@ -19,7 +19,7 @@ partial class TestEntity : Entity<Guid>
         Name = name;
     }
 
-    public static TestEntity? Create(string name)
+    internal static TestEntity? Create(string name)
     {
         OnCreating(ref name);
     
@@ -31,7 +31,7 @@ partial class TestEntity : Entity<Guid>
         return result;
     }
     
-    public void Update(string name)
+    internal void Update(string name)
     {
         OnUpdating(ref name);
         
