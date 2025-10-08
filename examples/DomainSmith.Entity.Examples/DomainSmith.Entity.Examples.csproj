@@ -14,4 +14,8 @@
     <ProjectReference Include="..\..\src\DomainSmith.Entity\DomainSmith.Entity.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
   </ItemGroup>
 
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
+	</ItemGroup>
+
 </Project>

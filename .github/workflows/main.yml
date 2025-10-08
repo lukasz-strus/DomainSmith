@@ -14,19 +14,22 @@ jobs:
     timeout-minutes: 10
     steps: 
 
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: setup dotnet
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
-      - name: restore dependencies
+      - name: Restore dependencies
         run: dotnet restore
 
-      - name: build
+      - name: Build
         run: dotnet build --no-restore --configuration Release
 
-      - name: test
+      - name: Test
         run: dotnet test /p:Configuration=Release --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
+      - name: Upload coverage reports to codecov
+        uses: codecov/codecov-action@v5
