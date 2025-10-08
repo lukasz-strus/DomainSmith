@@ -21,6 +21,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.Entity.Examples
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.Tests.Helpers", "tests\DomainSmith.Tests.Helpers\DomainSmith.Tests.Helpers.csproj", "{0EB32B9B-CAE4-4B1A-BD55-9E2B71C335EE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{C93B3DF4-A534-4DC9-B1F1-80130B8398D7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{F7D61DFB-457C-4B76-9AD0-4AF98DDCD671}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\main.yml = .github\workflows\main.yml
+		.github\workflows\pull-request.yml = .github\workflows\pull-request.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{DE8D62D3-91FF-4FD2-A6E9-BF35CEC01DA2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "validate-branch-name", "validate-branch-name", "{494659E5-6BE1-4E37-8329-68901AB7A3F5}"
+	ProjectSection(SolutionItems) = preProject
+		.github\actions\validate-branch-name\action.yml = .github\actions\validate-branch-name\action.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +77,9 @@ Global
 		{0B9C9856-15C7-49F5-98F7-933E0B296B4D} = {135EB3BA-BB78-43A8-8BD5-F221A9514FDF}
 		{5446636B-0DDD-4924-A970-8199FF35EEB8} = {8089AB3A-74F8-412D-81F9-8ED2A3EA5EC1}
 		{0EB32B9B-CAE4-4B1A-BD55-9E2B71C335EE} = {135EB3BA-BB78-43A8-8BD5-F221A9514FDF}
+		{F7D61DFB-457C-4B76-9AD0-4AF98DDCD671} = {C93B3DF4-A534-4DC9-B1F1-80130B8398D7}
+		{DE8D62D3-91FF-4FD2-A6E9-BF35CEC01DA2} = {C93B3DF4-A534-4DC9-B1F1-80130B8398D7}
+		{494659E5-6BE1-4E37-8329-68901AB7A3F5} = {DE8D62D3-91FF-4FD2-A6E9-BF35CEC01DA2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D5DB74A5-D8E6-4B19-B217-5A02834A0987}
