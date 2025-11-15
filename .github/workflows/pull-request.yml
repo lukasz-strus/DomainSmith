@@ -53,16 +53,16 @@ jobs:
           branch_name: ${{ github.head_ref }}
 
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
-      - name: mutation tests
+      - name: Mutation tests
         run: |
           dotnet tool restore
-          dotnet stryker -b 70 -s ./DomainSmith.sln
+          dotnet stryker -b 70
 
-      - name: upload test mutation reports
+      - name: Upload test mutation reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
