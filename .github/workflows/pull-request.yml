@@ -59,6 +59,7 @@ jobs:
 
       - name: mutation tests
         run: |
+          dotnet tool restore
           dotnet stryker --break-at 70 \
           -p:TargetFramework=net8.0 \
           -p:RunAnalyzers=false \
