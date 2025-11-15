@@ -60,7 +60,7 @@ jobs:
       - name: mutation tests
         run: |
           dotnet tool restore
-          dotnet stryker --solution-path DomainSmith.sln
+          dotnet stryker -b 70 -s "../DomainSmith.sln""
 
       - name: upload test mutation reports
         uses: actions/upload-artifact@v4
