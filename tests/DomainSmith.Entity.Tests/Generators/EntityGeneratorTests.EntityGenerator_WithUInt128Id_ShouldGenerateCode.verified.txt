@@ -83,6 +83,36 @@ partial class TestEntity : Entity<UInt128>
 
 file static class TestEntityExtensions
 {
-    public static bool CanCreate = true;
-    public static bool CanUpdate = true;
+    private static readonly System.Threading.AsyncLocal<bool?> _canCreate = new();
+    private static readonly System.Threading.AsyncLocal<bool?> _canUpdate = new();
+
+    public static bool CanCreate
+    {
+        get => _canCreate.Value ?? true;
+        set => _canCreate.Value = value;
+    }
+
+    public static bool CanUpdate
+    {
+        get => _canUpdate.Value ?? true;
+        set => _canUpdate.Value = value;
+    }
+
+    public static System.IDisposable UseCreate(bool value) => new Scope(_canCreate, value);
+    public static System.IDisposable UseUpdate(bool value) => new Scope(_canUpdate, value);
+
+    private sealed class Scope : System.IDisposable
+    {
+        private readonly System.Threading.AsyncLocal<bool?> _local;
+        private readonly bool? _previous;
+
+        public Scope(System.Threading.AsyncLocal<bool?> local, bool value)
+        {
+            _local = local;
+            _previous = local.Value;
+            local.Value = value;
+        }
+
+        public void Dispose() => _local.Value = _previous;
+    }
 }

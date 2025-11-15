@@ -15,9 +15,9 @@ internal abstract class BaseGenerator<TSyntax, TInfo> : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-#if DEBUG
-        // if (!Debugger.IsAttached) Debugger.Launch();
-#endif
+//#if DEBUG
+//         if (!Debugger.IsAttached) Debugger.Launch();
+//#endif
         var declarations = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: (node, _) => node is TSyntax { AttributeLists.Count: > 0 },

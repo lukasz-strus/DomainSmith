@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-      <TargetFramework>netstandard2.0</TargetFramework>
-	  <ImplicitUsings>disable</ImplicitUsings>
-	  <LangVersion>latest</LangVersion>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
 	    <Nullable>enable</Nullable>
-	  <Authors>Łukasz Strus</Authors>
+		<Authors>Łukasz Strus</Authors>
     </PropertyGroup>
 
 	<ItemGroup>
@@ -17,6 +17,7 @@
 	<ItemGroup>
 		<InternalsVisibleTo Include="DomainSmith.Abstraction.Tests" />
 		<InternalsVisibleTo Include="DomainSmith.Entity" />
+		<InternalsVisibleTo Include="DomainSmith.ValueObject" />
 	</ItemGroup>
 
 </Project>
