@@ -60,12 +60,7 @@ jobs:
       - name: mutation tests
         run: |
           dotnet tool restore
-          dotnet stryker --break-at 70 \
-          -p:TargetFramework=net8.0 \
-          -p:RunAnalyzers=false \
-          -p:EnableNETAnalyzers=false \
-          -p:AnalysisMode=None \
-          --verbosity detailed
+          dotnet stryker -b 70
 
       - name: upload test mutation reports
         uses: actions/upload-artifact@v4
