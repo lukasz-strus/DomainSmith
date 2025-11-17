@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36327.8
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -41,6 +41,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.ValueObject.Examples", "examples\DomainSmith.ValueObject.Examples\DomainSmith.ValueObject.Examples.csproj", "{B254E3ED-AF3C-46E9-BEB0-2E29B86591D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.ValueObject.Tests", "tests\DomainSmith.ValueObject.Tests\DomainSmith.ValueObject.Tests.csproj", "{C96D1F28-C702-4404-9FE0-5DF76E8D8818}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.AggregateRoot", "src\DomainSmith.AggregateRoot\DomainSmith.AggregateRoot.csproj", "{C50DD112-137E-471D-AB68-D6444ADDA295}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.AggregateRoot.Tests", "tests\DomainSmith.AggregateRoot.Tests\DomainSmith.AggregateRoot.Tests.csproj", "{9D58FDF2-195B-4BBD-9A4B-65036776F6F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.AggregateRoot.Examples", "examples\DomainSmith.AggregateRoot.Examples\DomainSmith.AggregateRoot.Examples.csproj", "{3B07A564-3444-4419-B5AB-755FCA6A4976}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +90,18 @@ Global
 		{C96D1F28-C702-4404-9FE0-5DF76E8D8818}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C96D1F28-C702-4404-9FE0-5DF76E8D8818}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C96D1F28-C702-4404-9FE0-5DF76E8D8818}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C50DD112-137E-471D-AB68-D6444ADDA295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C50DD112-137E-471D-AB68-D6444ADDA295}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C50DD112-137E-471D-AB68-D6444ADDA295}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C50DD112-137E-471D-AB68-D6444ADDA295}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D58FDF2-195B-4BBD-9A4B-65036776F6F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D58FDF2-195B-4BBD-9A4B-65036776F6F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D58FDF2-195B-4BBD-9A4B-65036776F6F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D58FDF2-195B-4BBD-9A4B-65036776F6F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B07A564-3444-4419-B5AB-755FCA6A4976}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B07A564-3444-4419-B5AB-755FCA6A4976}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B07A564-3444-4419-B5AB-755FCA6A4976}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B07A564-3444-4419-B5AB-755FCA6A4976}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,6 +119,9 @@ Global
 		{3CFCC894-2809-4B3C-B3F3-6829C68DDFDD} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{B254E3ED-AF3C-46E9-BEB0-2E29B86591D1} = {8089AB3A-74F8-412D-81F9-8ED2A3EA5EC1}
 		{C96D1F28-C702-4404-9FE0-5DF76E8D8818} = {135EB3BA-BB78-43A8-8BD5-F221A9514FDF}
+		{C50DD112-137E-471D-AB68-D6444ADDA295} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9D58FDF2-195B-4BBD-9A4B-65036776F6F6} = {135EB3BA-BB78-43A8-8BD5-F221A9514FDF}
+		{3B07A564-3444-4419-B5AB-755FCA6A4976} = {8089AB3A-74F8-412D-81F9-8ED2A3EA5EC1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D5DB74A5-D8E6-4B19-B217-5A02834A0987}

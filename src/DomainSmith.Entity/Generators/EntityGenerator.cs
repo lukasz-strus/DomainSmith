@@ -19,7 +19,6 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
         builder.SetTypeAgr(info.TypeArg);
         builder.SetIdValue(GetIdValueExpression(info));
         builder.SetExtensionName(info.Name);
-        builder.SetExtensionReference(info.Namespace, info.Name);
         builder.SetProperties(info.Properties);
 
         var source = builder.Build();
