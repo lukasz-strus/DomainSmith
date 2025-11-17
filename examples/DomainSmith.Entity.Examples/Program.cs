@@ -1,5 +1,7 @@
 ﻿using DomainSmith.Entity.Examples.Entities;
 
+Console.WriteLine("Start Testu");
+
 var owner = Owner.Create("Łukasz", "Strus", "lukasz.strus@gmail.com",
     new Address("Ulica", "Warszawa", "mazowieckie", "00-000"));
 
@@ -13,7 +15,7 @@ Console.WriteLine("ModifiedAt: " + owner?.ModifiedAt);
 Console.WriteLine("CreatedAt: " + owner?.CreatedAt);
 
 Thread.Sleep(5000);
-owner?.Update("Łukasz1", "Strus1", "lukasz1.strus@gmail.com",
+owner?.Update("Test", "Strus1", "lukasz1.strus@gmail.com",
     new Address("Ulica", "Warszawa", "mazowieckie", "00-000"));
 
 Console.WriteLine("Id: " + owner?.Id.Value);
