@@ -1,13 +1,13 @@
 ﻿using DomainSmith.Abstraction.Common;
 using DomainSmith.Abstraction.Core.Primitives;
 
-namespace DomainSmith.Entity.Examples.Entities;
+namespace DomainSmith.AggregateRoot.Examples.AggregateRoots;
 
 public record OwnerId(Guid Value) : EntityIdRecord<Guid>(Value);
 
 public record Address(string Street, string City, string State, string ZipCode);
 
-[Entity(typeof(OwnerId))]
+[AggregateRoot(typeof(OwnerId))]
 public partial class Owner
 {
     public string FirstName { get; private set; }

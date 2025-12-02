@@ -1,19 +1,20 @@
 ﻿using DomainSmith.Abstraction.Common;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using DomainSmith.Abstraction.Generators;
 using DomainSmith.Abstraction.Helpers;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace DomainSmith.Entity.Generators;
+namespace DomainSmith.AggregateRoot.Generators;
 
 [Generator]
-internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, EntityGenerator.ClassToAugment>
+internal sealed class
+    AggregateRootGenerator : BaseGenerator<ClassDeclarationSyntax, AggregateRootGenerator.ClassToAugment>
 {
-    protected override string AttributeFullName => typeof(EntityAttribute).FullName!;
+    protected override string AttributeFullName => typeof(AggregateRootAttribute).FullName!;
 
     protected override string GenerateSource(ClassToAugment info)
     {
-        var builder = new EntityBuilder();
+        var builder = new AggregateRootBuilder();
 
         builder.SetUsings(info.Usings);
         builder.SetNamespace(info.Namespace);
@@ -71,8 +72,8 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
 
         if (idTypeSymbol == null) return null;
 
-        var isEntityIdRecord = false;
-        var isEntityIdClass = false;
+        var isAggregateRootIdRecord = false;
+        var isAggregateRootIdClass = false;
         string? idValueType = null;
         var idTypeFullName = idTypeSymbol.ToDisplayString();
         for (var baseType = idTypeSymbol.BaseType; baseType != null; baseType = baseType.BaseType)
@@ -80,14 +81,14 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
             var baseName = baseType.ConstructedFrom.ToDisplayString();
             if (baseName == "DomainSmith.Abstraction.Core.Primitives.EntityIdRecord<T>")
             {
-                isEntityIdRecord = true;
+                isAggregateRootIdRecord = true;
                 idValueType = baseType.TypeArguments.FirstOrDefault()?.ToDisplayString();
                 break;
             }
 
             if (baseName == "DomainSmith.Abstraction.Core.Primitives.EntityIdClass<T>")
             {
-                isEntityIdClass = true;
+                isAggregateRootIdClass = true;
                 idValueType = baseType.TypeArguments.FirstOrDefault()?.ToDisplayString();
                 break;
             }
@@ -121,8 +122,8 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
             ns,
             usings,
             idTypeFullName,
-            isEntityIdRecord,
-            isEntityIdClass,
+            isAggregateRootIdRecord,
+            isAggregateRootIdClass,
             idValueType,
             properties
         );
@@ -135,7 +136,8 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
         if (valueExpr is not null)
             return valueExpr;
 
-        if (info is { IsEntityIdRecord: false, IsEntityIdClass: false } || string.IsNullOrEmpty(info.IdValueType))
+        if (info is { IsAggregateRootIdRecord: false, IsAggregateRootIdClass: false } ||
+            string.IsNullOrEmpty(info.IdValueType))
             return "default";
 
         valueExpr = info.IdValueType.ToGeneratingExpression();
@@ -149,8 +151,8 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
         string? ns,
         List<string> usings,
         string? idTypeFullName,
-        bool isEntityIdRecord,
-        bool isEntityIdClass,
+        bool isAggregateRootIdRecord,
+        bool isAggregateRootIdClass,
         string? idValueType,
         List<PropertyInfo> properties)
     {
@@ -159,8 +161,8 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
         public string? Namespace { get; } = ns;
         public List<string> Usings { get; } = usings;
         public string? IdTypeFullName { get; } = idTypeFullName;
-        public bool IsEntityIdRecord { get; } = isEntityIdRecord;
-        public bool IsEntityIdClass { get; } = isEntityIdClass;
+        public bool IsAggregateRootIdRecord { get; } = isAggregateRootIdRecord;
+        public bool IsAggregateRootIdClass { get; } = isAggregateRootIdClass;
         public string? IdValueType { get; } = idValueType;
         public List<PropertyInfo> Properties { get; } = properties;
     }
