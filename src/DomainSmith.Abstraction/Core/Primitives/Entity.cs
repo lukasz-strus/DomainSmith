@@ -23,7 +23,7 @@ public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
         return other != null! && EqualityComparer<TId>.Default.Equals(Id, other.Id);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj))
             return false;

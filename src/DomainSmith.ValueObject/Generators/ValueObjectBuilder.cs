@@ -76,56 +76,20 @@ internal sealed class ValueObjectBuilder : BaseBuilder
 
                      public static {{ClassName}}? Create({{createParamsStr}})
                      {
-                         OnCreating({{onCreatingRefParamsStr}});
+                         bool canCreate = true;
+
+                         OnCreating({{onCreatingRefParamsStr}}, ref canCreate);
                          
                          var result = new {{ClassName}}({{createArgsStr}});
 
-                         OnCreated(result);
-                         if (!{{_extensionReference}}.CanCreate) return null;
+                         OnCreated(result, ref canCreate);
+                         if (!canCreate) return null;
 
                          return result;
                      }
 
-                     static partial void OnCreating({{onCreatingParamsStr}});
-                     static partial void OnCreated({{ClassName}} instance);
-
-                     private void AllowCreate()
-                     {
-                         {{_extensionReference}}.CanCreate = true;
-                     }
-
-                     private void DisallowCreate()
-                     {
-                         {{_extensionReference}}.CanCreate = false;
-                     }
-                 }
-
-                 public static partial class {{_extensionName}}
-                 {
-                     private static readonly System.Threading.AsyncLocal<bool?> _canCreate = new();
-
-                     public static bool CanCreate
-                     {
-                         get => _canCreate.Value ?? true;
-                         set => _canCreate.Value = value;
-                     }
-
-                     public static System.IDisposable UseCreate(bool value) => new Scope(_canCreate, value);
-
-                     private sealed class Scope : System.IDisposable
-                     {
-                         private readonly System.Threading.AsyncLocal<bool?> _local;
-                         private readonly bool? _previous;
-
-                         public Scope(System.Threading.AsyncLocal<bool?> local, bool value)
-                         {
-                             _local = local;
-                             _previous = local.Value;
-                             local.Value = value;
-                         }
-
-                         public void Dispose() => _local.Value = _previous;
-                     }
+                     static partial void OnCreating({{onCreatingParamsStr}}, ref bool canCreate);
+                     static partial void OnCreated({{ClassName}} instance, ref bool canCreate);
                  }
                  """;
     }

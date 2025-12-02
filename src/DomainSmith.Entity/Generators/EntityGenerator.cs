@@ -1,6 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using DomainSmith.Abstraction.Common;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using DomainSmith.Abstraction.Generators;
+using DomainSmith.Abstraction.Helpers;
 
 namespace DomainSmith.Entity.Generators;
 
@@ -19,7 +21,6 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
         builder.SetTypeAgr(info.TypeArg);
         builder.SetIdValue(GetIdValueExpression(info));
         builder.SetExtensionName(info.Name);
-        builder.SetExtensionReference(info.Namespace, info.Name);
         builder.SetProperties(info.Properties);
 
         var source = builder.Build();
@@ -27,37 +28,6 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
 
         return source;
     }
-
-    private static string GetIdValueExpression(ClassToAugment info)
-    {
-        var valueExpr = GetGeneratingExpression(info.TypeArg);
-
-        if (valueExpr is not null)
-            return valueExpr;
-
-        if (info is { IsEntityIdRecord: false, IsEntityIdClass: false } || string.IsNullOrEmpty(info.IdValueType))
-            return "default";
-
-        valueExpr = GetGeneratingExpression(info.IdValueType);
-
-        return $"new {info.TypeArg}({valueExpr})";
-    }
-
-    private static string? GetGeneratingExpression(string? valueType) =>
-        valueType switch
-        {
-            "short" or "Int16" or "System.Int16" => "(short)new Random().Next(short.MinValue, short.MaxValue)",
-            "ushort" or "UInt16" or "System.UInt16" => "(ushort)new Random().Next(0, short.MaxValue)",
-            "int" or "Int32" or "System.Int32" => "new Random().Next()",
-            "uint" or "UInt32" or "System.UInt32" => "(uint)new Random().Next(0, int.MaxValue)",
-            "long" or "Int64" or "System.Int64" => "(long)new Random().Next()",
-            "ulong" or "UInt64" or "System.UInt64" => "(ulong)new Random().Next(0, int.MaxValue)",
-            "Int128" or "System.Int128" => "(Int128)new Random().Next()",
-            "UInt128" or "System.UInt128" => "(UInt128)new Random().Next(0, int.MaxValue)",
-            "Guid" or "System.Guid" => "Guid.NewGuid()",
-            "string" or "String" or "System.String" => "Guid.NewGuid().ToString()",
-            _ => null
-        };
 
     protected override ClassToAugment? CreateInfo(ClassDeclarationSyntax classSyntax, GeneratorSyntaxContext context)
     {
@@ -156,6 +126,21 @@ internal sealed class EntityGenerator : BaseGenerator<ClassDeclarationSyntax, En
             idValueType,
             properties
         );
+    }
+
+    private static string GetIdValueExpression(ClassToAugment info)
+    {
+        var valueExpr = info.TypeArg.ToGeneratingExpression();
+
+        if (valueExpr is not null)
+            return valueExpr;
+
+        if (info is { IsEntityIdRecord: false, IsEntityIdClass: false } || string.IsNullOrEmpty(info.IdValueType))
+            return "default";
+
+        valueExpr = info.IdValueType.ToGeneratingExpression();
+
+        return $"new {info.TypeArg}({valueExpr})";
     }
 
     public sealed class ClassToAugment(

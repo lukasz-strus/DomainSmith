@@ -21,98 +21,59 @@ partial class TestEntity : Entity<TestEntityId>
 
     internal static TestEntity? Create()
     {
-        OnCreating();
+        bool canCreate = true;
+        OnCreatingAuto(, ref canCreate);
+        OnCreating(, ref canCreate);
     
         var result = new TestEntity(new TestEntityId((ushort)new Random().Next(0, short.MaxValue)));
+                                 
+        OnCreated(result, ref canCreate);
+        if(!canCreate) return null;
 
         
-        
-        OnCreated(result);
-        if(!TestNamespace.TestEntityExtensions.CanCreate) return null;
-        
+
         return result;
     }
     
     internal void Update()
     {
-        OnUpdating();
+        bool canUpdate = true;
+        OnUpdatingAuto(, ref canUpdate);
+        OnUpdating(, ref canUpdate);
         
         
         
         
-        
-        OnUpdated();
-        if(!TestNamespace.TestEntityExtensions.CanUpdate) 
+        OnUpdated(ref canUpdate);
+        if(!canUpdate)
         {
            
            return;
         }
+        
     
         return;
     }
-    
-    static partial void OnCreating();
-    static partial void OnCreated(TestEntity result);
 
-    partial void OnUpdating();
-    partial void OnUpdated();
-
-    
-    
-    
-    private void AllowUpdate()
+    private static void OnCreatingAuto(, ref bool canCreate)
     {
-        TestNamespace.TestEntityExtensions.CanUpdate = true;
-    }
-    
-    private void AllowCreate()
-    {
-        TestNamespace.TestEntityExtensions.CanCreate = true;
-    }
-    
-    private void DisallowUpdate()
-    {
-        TestNamespace.TestEntityExtensions.CanUpdate = false;
-    }
-    
-    private void DisallowCreate()
-    {
-        TestNamespace.TestEntityExtensions.CanCreate = false;
-    }
-}
-
-file static class TestEntityExtensions
-{
-    private static readonly System.Threading.AsyncLocal<bool?> _canCreate = new();
-    private static readonly System.Threading.AsyncLocal<bool?> _canUpdate = new();
-
-    public static bool CanCreate
-    {
-        get => _canCreate.Value ?? true;
-        set => _canCreate.Value = value;
+        
     }
 
-    public static bool CanUpdate
+    private void OnUpdatingAuto(, ref bool canUpdate)
     {
-        get => _canUpdate.Value ?? true;
-        set => _canUpdate.Value = value;
+        
     }
+    
+    static partial void OnCreating(, ref bool canCreate);
+    static partial void OnCreated(TestEntity result, ref bool canCreate);
 
-    public static System.IDisposable UseCreate(bool value) => new Scope(_canCreate, value);
-    public static System.IDisposable UseUpdate(bool value) => new Scope(_canUpdate, value);
+    partial void OnUpdating(, ref bool canUpdate);
+    partial void OnUpdated(ref bool canUpdate);
 
-    private sealed class Scope : System.IDisposable
-    {
-        private readonly System.Threading.AsyncLocal<bool?> _local;
-        private readonly bool? _previous;
+    
+    
 
-        public Scope(System.Threading.AsyncLocal<bool?> local, bool value)
-        {
-            _local = local;
-            _previous = local.Value;
-            local.Value = value;
-        }
-
-        public void Dispose() => _local.Value = _previous;
-    }
-}
+    
+    
+}                 
