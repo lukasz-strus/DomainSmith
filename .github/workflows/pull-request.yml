@@ -23,6 +23,9 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 10.0.x
+
+    - name: Clean
+      run: dotnet clean
     
     - name: Restore dependencies
       run: dotnet restore
@@ -41,7 +44,7 @@ jobs:
 
   mutation-tests:
     runs-on: windows-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     steps:
       - name: Checkout

@@ -1,4 +1,6 @@
-﻿namespace DomainSmith.Entity;
+﻿using System;
+
+namespace DomainSmith.Abstraction.Common;
 
 [AttributeUsage(AttributeTargets.Property)]
 public sealed class ExcludeFromGenerationAttribute : Attribute;
