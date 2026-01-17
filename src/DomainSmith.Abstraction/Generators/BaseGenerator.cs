@@ -16,7 +16,7 @@ internal abstract class BaseGenerator<TSyntax, TInfo> : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
 //#if DEBUG
-//         if (!Debugger.IsAttached) Debugger.Launch();
+//        if (!Debugger.IsAttached) Debugger.Launch();
 //#endif
         var declarations = context.SyntaxProvider
             .CreateSyntaxProvider(

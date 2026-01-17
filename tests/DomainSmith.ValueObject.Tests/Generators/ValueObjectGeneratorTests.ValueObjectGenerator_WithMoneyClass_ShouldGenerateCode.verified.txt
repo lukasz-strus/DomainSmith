@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text.Json;
+using DomainSmith.Abstraction.Core.Result;
 
 namespace TestNamespace;
 
@@ -19,20 +20,21 @@ partial record Money
 		Currency = currency;
     }
 
-    public static Money? Create(decimal amount, string currency)
+    public static Result<Money> Create(decimal amount, string currency)
     {
         bool canCreate = true;
+		Error error = Error.None;
 
-        OnCreating(ref amount, ref currency, ref canCreate);
+        OnCreating(ref amount, ref currency, ref canCreate, ref error);
         
         var result = new Money(amount, currency);
 
-        OnCreated(result, ref canCreate);
-        if (!canCreate) return null;
+        OnCreated(result, ref canCreate, ref error);
+        if (!canCreate) return Result.Failure<Money>(error);
 
-        return result;
+        return Result.Success(result);
     }
 
-    static partial void OnCreating(ref decimal amount, ref string currency, ref bool canCreate);
-    static partial void OnCreated(Money instance, ref bool canCreate);
+    static partial void OnCreating(ref decimal amount, ref string currency, ref bool canCreate, ref Error error);
+    static partial void OnCreated(Money instance, ref bool canCreate, ref Error error);
 }

@@ -1,4 +1,5 @@
-﻿using DomainSmith.Abstraction.Generators;
+﻿using DomainSmith.Abstraction.Common;
+using DomainSmith.Abstraction.Generators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -19,6 +20,7 @@ internal sealed class ValueObjectGenerator : BaseGenerator<MemberDeclarationSynt
         builder.SetExtensionName(info.Name);
         builder.SetExtensionReference(info.Namespace, info.Name);
         builder.SetProperties(info.Properties);
+        builder.SetIsResultPattern(!info.NoResultPattern);
 
         var source = builder.Build();
         builder.Clear();
@@ -50,17 +52,24 @@ internal sealed class ValueObjectGenerator : BaseGenerator<MemberDeclarationSynt
             .Distinct()
             .ToList() ?? [];
 
-        var attributeSyntaxes = syntax.AttributeLists
+        var attributeSyntax = syntax.AttributeLists
             .SelectMany(list => list.Attributes)
             .Select(attr => new
             {
                 attr,
                 symbol = context.SemanticModel.GetSymbolInfo(attr).Symbol as IMethodSymbol
-            })
+            }).ToList();
+
+        var mainAttributeSyntaxes = attributeSyntax
             .Where(x => x.symbol?.ContainingType.ToDisplayString() == AttributeFullName)
             .Select(x => x.attr);
 
-        if (!attributeSyntaxes.Any()) return null;
+        if (!mainAttributeSyntaxes.Any()) return null;
+
+        var isNoPatternResultAttribute = attributeSyntax
+            .Where(x => x.symbol?.ContainingType.ToDisplayString() == typeof(NoResultPatternAttribute).FullName)
+            .Select(x => x.attr)
+            .Any();
 
         var properties = syntax.Members
             .OfType<PropertyDeclarationSyntax>()
@@ -68,18 +77,21 @@ internal sealed class ValueObjectGenerator : BaseGenerator<MemberDeclarationSynt
             .Select(p => (Type: p.Type.ToString(), Name: p.Identifier.Text))
             .ToList();
 
-        return new ClassToAugment(name, ns, usings, properties);
+
+        return new ClassToAugment(name, ns, usings, properties, isNoPatternResultAttribute);
     }
 
     public sealed class ClassToAugment(
         string name,
         string? ns,
         List<string> usings,
-        List<(string Type, string Name)> properties)
+        List<(string Type, string Name)> properties,
+        bool noResultPattern)
     {
         public string Name { get; } = name;
         public string? Namespace { get; } = ns;
         public List<string> Usings { get; } = usings;
         public List<(string Type, string Name)> Properties { get; } = properties;
+        public bool NoResultPattern { get; } = noResultPattern;
     }
 }

@@ -25,10 +25,12 @@ public sealed class ValueObjectGeneratorTests
     private const string InputSourceMoneyRecord =
         """
         using DomainSmith.ValueObject;
+        using DomainSmith.Abstraction.Common;
 
         namespace TestNamespace;
 
         [ValueObject]
+        [NoResultPattern]
         public partial record Money
         {
             public decimal Amount { get; init; }
@@ -58,6 +60,7 @@ public sealed class ValueObjectGeneratorTests
         namespace TestNamespace;
 
         [ValueObject]
+        [NoResultPattern]
         public partial class Money
         {
             public decimal Amount { get; init; }

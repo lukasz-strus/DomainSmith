@@ -29,16 +29,18 @@ public sealed class ValueObjectBuilderTests
         output.Should().Contain("private Money(decimal amount, string currency)");
         output.Should().Contain("Amount = amount;");
         output.Should().Contain("Currency = currency;");
-        output.Should().Contain("public static Money? Create(decimal amount, string currency)");
+        output.Should().Contain("public static Result<Money> Create(decimal amount, string currency)");
         output.Should().Contain("bool canCreate = true;");
-        output.Should().Contain("OnCreating(ref amount, ref currency, ref canCreate);");
-        output.Should().Contain("var result = new Money(amount, currency);");
-        output.Should().Contain("OnCreated(result, ref canCreate);");
-        output.Should().Contain("if (!canCreate) return null;");
-        output.Should().Contain("return result;");
         output.Should()
-            .Contain("static partial void OnCreating(ref decimal amount, ref string currency, ref bool canCreate);");
-        output.Should().Contain("static partial void OnCreated(Money instance, ref bool canCreate);");
+            .Contain("OnCreating(ref decimal amount, ref string currency, ref bool canCreate, ref Error error);");
+        output.Should().Contain("var result = new Money(amount, currency);");
+        output.Should().Contain("OnCreated(Money instance, ref bool canCreate, ref Error error);");
+        output.Should().Contain("if (!canCreate) return Result.Failure<Money>(error);");
+        output.Should().Contain("return Result.Success(result);");
+        output.Should()
+            .Contain(
+                "static partial void OnCreating(ref decimal amount, ref string currency, ref bool canCreate, ref Error error);");
+        output.Should().Contain("static partial void OnCreated(Money instance, ref bool canCreate, ref Error error);");
 
         builder.Clear();
     }
@@ -62,12 +64,15 @@ public sealed class ValueObjectBuilderTests
         output.Should().Contain("partial record Temperature");
         output.Should().Contain("private Temperature(double celsius)");
         output.Should().Contain("Celsius = celsius;");
-        output.Should().Contain("public static Temperature? Create(double celsius)");
-        output.Should().Contain("OnCreating(ref celsius, ref canCreate);");
+        output.Should().Contain("public static Result<Temperature> Create(double celsius)");
+        output.Should().Contain("OnCreating(ref celsius, ref canCreate, ref error);");
         output.Should().Contain("var result = new Temperature(celsius);");
-        output.Should().Contain("OnCreated(result, ref canCreate);");
-        output.Should().Contain("static partial void OnCreating(ref double celsius, ref bool canCreate);");
-        output.Should().Contain("static partial void OnCreated(Temperature instance, ref bool canCreate);");
+        output.Should().Contain("OnCreated(result, ref canCreate, ref error);");
+        output.Should().Contain("if (!canCreate) return Result.Failure<Temperature>(error);");
+        output.Should()
+            .Contain("static partial void OnCreating(ref double celsius, ref bool canCreate, ref Error error);");
+        output.Should()
+            .Contain("static partial void OnCreated(Temperature instance, ref bool canCreate, ref Error error);");
 
         builder.Clear();
     }
