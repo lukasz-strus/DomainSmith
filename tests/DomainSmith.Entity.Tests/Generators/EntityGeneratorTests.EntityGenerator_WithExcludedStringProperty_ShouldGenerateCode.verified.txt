@@ -52,7 +52,7 @@ partial class TestEntity : Entity<Guid>
            return;
         }
         
-    
+
         return;
     }
 

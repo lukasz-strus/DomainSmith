@@ -8,6 +8,35 @@ namespace DomainSmith.ValueObject.Tests.Generators;
 public sealed class ValueObjectGeneratorTests
 {
     [Fact]
+    public async Task ValueObjectGenerator_WithMoneyRecord_ShouldGenerateResultCode()
+    {
+        // Arrange
+        var inputCompilation = CompilationCreator.CreateCompilation(InputSourceMoneyRecordForResult);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new ValueObjectGenerator());
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.Last().ToString();
+        // Assert
+        await Verify(output);
+    }
+
+    private const string InputSourceMoneyRecordForResult =
+        """
+        using DomainSmith.ValueObject;
+        using DomainSmith.Abstraction.Common;
+
+        namespace TestNamespace;
+
+        [ValueObject]
+        public partial record Money
+        {
+            public decimal Amount { get; init; }
+            public string Currency { get; init; } = "USD";
+        }
+        """;
+
+
+    [Fact]
     public async Task ValueObjectGenerator_WithMoneyRecord_ShouldGenerateCode()
     {
         // Arrange
