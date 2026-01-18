@@ -61,10 +61,11 @@ public sealed class AggregateRootGeneratorTests
         using DomainSmith.AggregateRoot;
         using DomainSmith.Abstraction.Common;
 
+        [assembly: NoResultPattern]
+
         namespace TestNamespace;
 
         [AggregateRoot(typeof(Guid))]
-        [NoResultPattern]
         public sealed partial class TestAggregateRoot
         {
             public string Name { get; private set; }

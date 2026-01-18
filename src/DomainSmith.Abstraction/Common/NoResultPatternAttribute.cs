@@ -2,5 +2,5 @@
 
 namespace DomainSmith.Abstraction.Common;
 
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class)]
 public sealed class NoResultPatternAttribute : Attribute;

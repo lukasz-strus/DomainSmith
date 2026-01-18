@@ -66,10 +66,14 @@ internal sealed class ValueObjectGenerator : BaseGenerator<MemberDeclarationSynt
 
         if (!mainAttributeSyntaxes.Any()) return null;
 
-        var isNoPatternResultAttribute = attributeSyntax
-            .Where(x => x.symbol?.ContainingType.ToDisplayString() == typeof(NoResultPatternAttribute).FullName)
-            .Select(x => x.attr)
-            .Any();
+        var isNoResultPatternAssembly = context.SemanticModel.Compilation.Assembly
+            .GetAttributes()
+            .Any(a => a.AttributeClass?.ToDisplayString() == typeof(NoResultPatternAttribute).FullName);
+
+        var isNoResultPatternLocal = attributeSyntax
+            .Any(x => x.symbol?.ContainingType.ToDisplayString() == typeof(NoResultPatternAttribute).FullName);
+
+        var isNoPatternResultAttribute = isNoResultPatternLocal || isNoResultPatternAssembly;
 
         var properties = syntax.Members
             .OfType<PropertyDeclarationSyntax>()

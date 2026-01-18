@@ -56,10 +56,11 @@ public sealed class ValueObjectGeneratorTests
         using DomainSmith.ValueObject;
         using DomainSmith.Abstraction.Common;
 
+        [assembly: NoResultPattern]
+
         namespace TestNamespace;
 
         [ValueObject]
-        [NoResultPattern]
         public partial record Money
         {
             public decimal Amount { get; init; }

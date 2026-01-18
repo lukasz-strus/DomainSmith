@@ -60,10 +60,11 @@ public sealed class EntityGeneratorTests
         using DomainSmith.Entity;
         using DomainSmith.Abstraction.Common;
 
+        [assembly: NoResultPattern]
+
         namespace TestNamespace;
 
         [Entity(typeof(Guid))]
-        [NoResultPattern]
         public sealed partial class TestEntity
         {
             public string Name { get; private set; }

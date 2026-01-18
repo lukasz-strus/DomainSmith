@@ -1,5 +1,7 @@
 ﻿using DomainSmith.ValueObject.Examples.ValueObjects;
 
+//[assembly: NoResultPattern]
+
 Console.WriteLine("Hello, World!");
 
 var result = Money.Create(10.5m, "USD123");

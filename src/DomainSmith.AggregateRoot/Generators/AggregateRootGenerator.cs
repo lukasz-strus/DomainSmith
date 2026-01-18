@@ -119,10 +119,14 @@ internal sealed class
             })
             .ToList();
 
-        var isNoPatternResultAttribute = attributeSyntaxesAll
-            .Where(x => x.symbol?.ContainingType.ToDisplayString() == typeof(NoResultPatternAttribute).FullName)
-            .Select(x => x.attr)
-            .Any();
+        var isNoResultPatternAssembly = context.SemanticModel.Compilation.Assembly
+            .GetAttributes()
+            .Any(a => a.AttributeClass?.ToDisplayString() == typeof(NoResultPatternAttribute).FullName);
+
+        var isNoResultPatternLocal = attributeSyntaxesAll
+            .Any(x => x.symbol?.ContainingType.ToDisplayString() == typeof(NoResultPatternAttribute).FullName);
+
+        var isNoPatternResultAttribute = isNoResultPatternLocal || isNoResultPatternAssembly;
 
         return new ClassToAugment(
             name,
