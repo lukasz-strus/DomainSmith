@@ -2,8 +2,10 @@
 
 Console.WriteLine("Start Testu");
 
-var owner = Owner.Create("Łukasz", "Strus", "lukasz.strus@gmail.com",
+var result = Owner.Create("Łukasz", "Strus", "lukasz.strus@gmail.com",
     new Address("Ulica", "Warszawa", "mazowieckie", "00-000"));
+
+var owner = result.Value();
 
 Console.WriteLine("Id: " + owner?.Id.Value);
 Console.WriteLine("Name: " + owner?.FirstName + " " + owner?.LastName);

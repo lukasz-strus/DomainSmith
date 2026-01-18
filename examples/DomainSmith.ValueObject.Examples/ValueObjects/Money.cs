@@ -1,4 +1,6 @@
-﻿namespace DomainSmith.ValueObject.Examples.ValueObjects;
+﻿using DomainSmith.Abstraction.Common;
+
+namespace DomainSmith.ValueObject.Examples.ValueObjects;
 
 [ValueObject]
 public partial record Money

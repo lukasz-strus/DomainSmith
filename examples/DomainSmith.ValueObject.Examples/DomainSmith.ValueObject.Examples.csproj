@@ -16,6 +16,7 @@
 
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
+		<!--<AssemblyAttribute Include="DomainSmith.Abstraction.Common.NoResultPattern" />-->
 	</ItemGroup>
 
 </Project>
