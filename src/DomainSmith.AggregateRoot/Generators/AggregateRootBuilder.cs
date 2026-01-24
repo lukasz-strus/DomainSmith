@@ -254,9 +254,9 @@ internal sealed class AggregateRootBuilder : BaseBuilder
                 sb.AppendLine();
             }
 
-            var addName = $"Add{c.ElementType}";
-            var updateName = $"Update{c.ElementType}";
-            var deleteName = $"Delete{c.ElementType}";
+            var addName = $"AddNewElementTo{c.PropertyName}";
+            var updateName = $"UpdateElementIn{c.PropertyName}";
+            var deleteName = $"DeleteElementFrom{c.PropertyName}";
 
             var argsDecl = string.Join(", ", c.CtorArgs.Select(a => $"{a.Type} {a.Name}"));
             var argsCall = string.Join(", ", c.CtorArgs.Select(a => a.Name));

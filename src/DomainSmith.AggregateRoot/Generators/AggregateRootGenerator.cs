@@ -241,6 +241,16 @@ internal sealed class
         return char.ToUpperInvariant(name[0]) + name.Substring(1);
     }
 
+    private static string ToSingular(string pascalPluralName)
+    {
+        if (string.IsNullOrWhiteSpace(pascalPluralName))
+            return pascalPluralName;
+
+        return pascalPluralName.EndsWith("s", StringComparison.Ordinal)
+            ? pascalPluralName.Substring(0, pascalPluralName.Length - 1)
+            : pascalPluralName;
+    }
+
     private static string TrimUnderscore(string name) =>
         name.StartsWith("_", StringComparison.Ordinal) ? name.Substring(1, name.Length - 1) : name;
 
