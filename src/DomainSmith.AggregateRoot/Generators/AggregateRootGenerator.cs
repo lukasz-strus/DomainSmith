@@ -172,11 +172,18 @@ internal sealed class
             .Select(x => new
             {
                 FieldName = x.Var.Identifier.Text,
+                FieldSyntax = x.Field,
                 FieldType = x.FieldType as INamedTypeSymbol
             })
             .Where(x =>
                 x.FieldType is { IsGenericType: true } &&
                 x.FieldType.ConstructedFrom.ToDisplayString() == "System.Collections.Generic.HashSet<T>")
+            .Where(x =>
+            {
+                var fieldSymbol =
+                    context.SemanticModel.GetDeclaredSymbol(x.FieldSyntax.Declaration.Variables[0]) as IFieldSymbol;
+                return fieldSymbol is null || !HasExcludeFromGenerationAttribute(fieldSymbol);
+            })
             .Select(x => new
             {
                 x.FieldName,
@@ -217,6 +224,10 @@ internal sealed class
 
         return collections;
     }
+
+    private static bool HasExcludeFromGenerationAttribute(ISymbol symbol)
+        => symbol.GetAttributes()
+            .Any(a => a.AttributeClass?.ToDisplayString() == typeof(ExcludeFromGenerationAttribute).FullName);
 
     private static bool HasNoResultPatternAttribute(ISymbol symbol)
         => symbol.GetAttributes()

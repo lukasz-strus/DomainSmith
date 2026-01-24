@@ -23,6 +23,7 @@ public partial class Owner
 {
     private readonly HashSet<Car> _newCars = [];
     private readonly HashSet<Car> _oldCars = [];
+    [ExcludeFromGeneration] private readonly HashSet<Car> _allCars = [];
 
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
