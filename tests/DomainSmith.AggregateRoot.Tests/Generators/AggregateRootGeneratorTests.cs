@@ -58,26 +58,28 @@ public sealed class AggregateRootGeneratorTests
 
     [Fact]
     public async Task
-        AggregateRootGenerator_WithEntityCollection_WhenExistingReadOnlyCollectionProperty_ShouldNotGeneratePropertyAgain()
+        AggregateRootGenerator_WithEntityCollectionsAndNoResultPatternAttributeOnAggregateRoot_ShouldGenerateCode()
     {
         // Arrange
         var inputCompilation =
-            CompilationCreator.CreateCompilation(InputSourceWithEntityCollectionsAndExistingProperty);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new AggregateRootGenerator());
+            CompilationCreator.CreateCompilation(
+                InputSourceWithEntityCollectionsAndNoResultPatternAttributeOnAggregateRoot);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new AggregateRootGenerator(), new EntityGenerator());
 
         // Act
         driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
+        var output = outputCompilation.SyntaxTrees.ToList()[^2].ToString();
 
         // Assert
         await Verify(output);
     }
 
-    private const string InputSourceWithEntityCollectionsAndExistingProperty =
+    private const string InputSourceWithEntityCollectionsAndNoResultPatternAttributeOnAggregateRoot =
         """
         using DomainSmith.AggregateRoot;
         using DomainSmith.Entity;
         using DomainSmith.Abstraction.Common;
+        using System.Collections.Generic;
 
         namespace TestNamespace;
 
@@ -93,36 +95,41 @@ public sealed class AggregateRootGeneratorTests
         }
 
         [AggregateRoot(typeof(TestAggregateRootId))]
+        [NoResultPattern]
         public sealed partial class TestAggregateRoot
         {
             private readonly HashSet<Car> _newCars = [];
+            private readonly HashSet<Car> _oldCars = [];
+            [ExcludeFromGeneration] private readonly HashSet<Car> _allCars = [];
 
-            public IReadOnlyCollection<Car> Cars => _newCars;
+            public string FirstName { get; private set; }
         }
         """;
 
     [Fact]
     public async Task
-        AggregateRootGenerator_WithEntityCollections_WhenEntityHasNoResultPattern_ShouldGenerateNonGenericResultMethods()
+        AggregateRootGenerator_WithEntityCollectionsAndNoResultPatternAttributeOnEntity_ShouldGenerateCode()
     {
         // Arrange
         var inputCompilation =
-            CompilationCreator.CreateCompilation(InputSourceWithEntityCollectionsEntityNoResultPattern);
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new AggregateRootGenerator());
+            CompilationCreator.CreateCompilation(
+                InputSourceWithEntityCollectionsAndNoResultPatternAttributeOnEntity);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new AggregateRootGenerator(), new EntityGenerator());
 
         // Act
         driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
-        var output = outputCompilation.SyntaxTrees.Last().ToString();
+        var output = outputCompilation.SyntaxTrees.ToList()[^2].ToString();
 
         // Assert
         await Verify(output);
     }
 
-    private const string InputSourceWithEntityCollectionsEntityNoResultPattern =
+    private const string InputSourceWithEntityCollectionsAndNoResultPatternAttributeOnEntity =
         """
         using DomainSmith.AggregateRoot;
         using DomainSmith.Entity;
         using DomainSmith.Abstraction.Common;
+        using System.Collections.Generic;
 
         namespace TestNamespace;
 
@@ -141,7 +148,62 @@ public sealed class AggregateRootGeneratorTests
         [AggregateRoot(typeof(TestAggregateRootId))]
         public sealed partial class TestAggregateRoot
         {
-            private readonly HashSet<Car> _cars = [];
+            private readonly HashSet<Car> _newCars = [];
+            private readonly HashSet<Car> _oldCars = [];
+            [ExcludeFromGeneration] private readonly HashSet<Car> _allCars = [];
+
+            public string FirstName { get; private set; }
+        }
+        """;
+
+    [Fact]
+    public async Task
+        AggregateRootGenerator_WithEntityCollectionsAndNoResultPatternAttributeOnAggregateRootAndEntity_ShouldGenerateCode()
+    {
+        // Arrange
+        var inputCompilation =
+            CompilationCreator.CreateCompilation(
+                InputSourceWithEntityCollectionsAndNoResultPatternAttributeOnAggregateRootAndEntity);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(new AggregateRootGenerator(), new EntityGenerator());
+
+        // Act
+        driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out _);
+        var output = outputCompilation.SyntaxTrees.ToList()[^2].ToString();
+
+        // Assert
+        await Verify(output);
+    }
+
+    private const string InputSourceWithEntityCollectionsAndNoResultPatternAttributeOnAggregateRootAndEntity =
+        """
+        using DomainSmith.AggregateRoot;
+        using DomainSmith.Entity;
+        using DomainSmith.Abstraction.Common;
+        using System.Collections.Generic;
+
+        namespace TestNamespace;
+
+        public sealed record TestAggregateRootId(Guid Value);
+
+        public sealed record CarId(Guid Value);
+
+        [Entity(typeof(CarId))]
+        [NoResultPattern]
+        public sealed partial class Car
+        {
+            public string Name { get; private set; }
+            public decimal Price { get; private set; }
+        }
+
+        [AggregateRoot(typeof(TestAggregateRootId))]
+        [NoResultPattern]
+        public sealed partial class TestAggregateRoot
+        {
+            private readonly HashSet<Car> _newCars = [];
+            private readonly HashSet<Car> _oldCars = [];
+            [ExcludeFromGeneration] private readonly HashSet<Car> _allCars = [];
+
+            public string FirstName { get; private set; }
         }
         """;
 
