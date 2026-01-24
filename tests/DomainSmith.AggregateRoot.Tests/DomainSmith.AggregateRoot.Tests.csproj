@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DomainSmith.AggregateRoot\DomainSmith.AggregateRoot.csproj" />
+    <ProjectReference Include="..\..\src\DomainSmith.Entity\DomainSmith.Entity.csproj" />
     <ProjectReference Include="..\DomainSmith.Tests.Helpers\DomainSmith.Tests.Helpers.csproj" />
   </ItemGroup>
 
