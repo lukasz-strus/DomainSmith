@@ -1,15 +1,14 @@
-﻿using DomainSmith.Abstraction.Generators;
-using DomainSmith.Abstraction.Helpers;
-using DomainSmith.Entity;
+﻿using DomainSmith.Abstraction.Extensions;
+using DomainSmith.Abstraction.Generators;
+using DomainSmith.AggregateRoot.Generators.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using DomainSmith.Abstraction.Common;
+using DomainSmith.AggregateRoot.Generators.Extensions;
 
 namespace DomainSmith.AggregateRoot.Generators;
 
 [Generator]
-internal sealed class
-    AggregateRootGenerator : BaseGenerator<ClassDeclarationSyntax, AggregateRootGenerator.ClassToAugment>
+internal sealed class AggregateRootGenerator : BaseGenerator<ClassDeclarationSyntax, ClassToAugment>
 {
     protected override string AttributeFullName => typeof(AggregateRootAttribute).FullName!;
 
@@ -21,7 +20,7 @@ internal sealed class
         builder.SetNamespace(info.Namespace);
         builder.SetClassName(info.Name);
         builder.SetTypeAgr(info.TypeArg);
-        builder.SetIdValue(GetIdValueExpression(info));
+        builder.SetIdValue(info.GetIdValueExpression());
         builder.SetExtensionName(info.Name);
         builder.SetProperties(info.Properties);
         builder.SetIsResultPattern(!info.NoResultPattern);
@@ -35,332 +34,34 @@ internal sealed class
 
     protected override ClassToAugment? CreateInfo(ClassDeclarationSyntax classSyntax, GeneratorSyntaxContext context)
     {
-        var name = classSyntax.Identifier.Text;
-        var ns = classSyntax.FirstAncestorOrSelf<NamespaceDeclarationSyntax>()?.Name.ToString()
-                 ?? classSyntax.FirstAncestorOrSelf<FileScopedNamespaceDeclarationSyntax>()?.Name.ToString();
+        var name = classSyntax.GetName();
+        var ns = classSyntax.GetNamespace();
+        var usings = classSyntax.GetUsings();
+        var allAttributes = classSyntax.GetAllAttributes(context);
+        var aggregateRootAttributes = allAttributes.GetAttributesByFullName(AttributeFullName);
 
-        var usings = classSyntax
-            .FirstAncestorOrSelf<CompilationUnitSyntax>()?
-            .DescendantNodesAndSelf()
-            .OfType<UsingDirectiveSyntax>()
-            .Select(x => $"using {x.Name};")
-            .Distinct()
-            .ToList() ?? [];
+        if (!aggregateRootAttributes.TryGetIdType(context, out var typeArg, out var idTypeSymbol))
+            return null;
 
-        usings.Add("using DomainSmith.Abstraction.Core.Primitives;");
+        if (idTypeSymbol == null)
+            return null;
 
-        var attributeSyntaxesAll = classSyntax.AttributeLists
-            .SelectMany(list => list.Attributes)
-            .Select(attr => new
-            {
-                attr,
-                symbol = context.SemanticModel.GetSymbolInfo(attr).Symbol as IMethodSymbol
-            })
-            .ToList();
-
-        var attributeSyntaxes = attributeSyntaxesAll
-            .Where(x => x.symbol?.ContainingType.ToDisplayString() == AttributeFullName)
-            .Select(x => x.attr);
-
-        var typeArg = "int";
-        INamedTypeSymbol? idTypeSymbol = null;
-        foreach (var attr in attributeSyntaxes)
-        {
-            if (!(attr.ArgumentList?.Arguments.Count > 0)
-                || attr.ArgumentList.Arguments[0].Expression is not TypeOfExpressionSyntax typeOfExpr)
-                continue;
-
-            typeArg = typeOfExpr.Type.ToString();
-            idTypeSymbol = context.SemanticModel.GetTypeInfo(typeOfExpr.Type).Type as INamedTypeSymbol;
-            break;
-        }
-
-        if (idTypeSymbol == null) return null;
-
-        var isAggregateRootIdRecord = false;
-        var isAggregateRootIdClass = false;
-        string? idValueType = null;
-        var idTypeFullName = idTypeSymbol.ToDisplayString();
-        for (var baseType = idTypeSymbol.BaseType; baseType != null; baseType = baseType.BaseType)
-        {
-            var baseName = baseType.ConstructedFrom.ToDisplayString();
-            if (baseName == "DomainSmith.Abstraction.Core.Primitives.EntityIdRecord<T>")
-            {
-                isAggregateRootIdRecord = true;
-                idValueType = baseType.TypeArguments.FirstOrDefault()?.ToDisplayString();
-                break;
-            }
-
-            if (baseName == "DomainSmith.Abstraction.Core.Primitives.EntityIdClass<T>")
-            {
-                isAggregateRootIdClass = true;
-                idValueType = baseType.TypeArguments.FirstOrDefault()?.ToDisplayString();
-                break;
-            }
-        }
-
-        var properties = classSyntax.Members
-            .OfType<PropertyDeclarationSyntax>()
-            .Where(p =>
-            {
-                var symbol = context.SemanticModel.GetDeclaredSymbol(p);
-                return symbol is not null &&
-                       !symbol.GetAttributes().Any(a =>
-                           a.AttributeClass?.ToDisplayString() == typeof(ExcludeFromGenerationAttribute).FullName!);
-            })
-            .Select(p =>
-            {
-                var symbol = context.SemanticModel.GetDeclaredSymbol(p);
-                var isAutoGenerated = symbol?.GetAttributes().Any(a =>
-                    a.AttributeClass?.ToDisplayString() == typeof(AutoGeneratedAttribute).FullName!) == true;
-                return new PropertyInfo(
-                    p.Type.ToString(),
-                    p.Identifier.Text,
-                    isAutoGenerated
-                );
-            })
-            .ToList();
-
-        var isNoResultPatternAssembly = context.SemanticModel.Compilation.Assembly
-            .GetAttributes()
-            .Any(a => a.AttributeClass?.ToDisplayString() == typeof(NoResultPatternAttribute).FullName);
-
-        var isNoResultPatternLocal = attributeSyntaxesAll
-            .Any(x => x.symbol?.ContainingType.ToDisplayString() == typeof(NoResultPatternAttribute).FullName);
-
-        var isNoPatternResultAttribute = isNoResultPatternLocal || isNoResultPatternAssembly;
-
-        var entityCollections = ExtractEntityCollections(classSyntax, context);
+        var idMetadata = idTypeSymbol.GetIdMetadata();
+        var properties = classSyntax.GetAugmentableProperties(context);
+        var noResultPattern = allAttributes.HasNoResultPattern(context);
+        var entityCollections = classSyntax.ExtractEntityCollections(context);
 
         return new ClassToAugment(
             name,
             typeArg,
             ns,
             usings,
-            idTypeFullName,
-            isAggregateRootIdRecord,
-            isAggregateRootIdClass,
-            idValueType,
+            idMetadata.IsRecord,
+            idMetadata.IsClass,
+            idMetadata.ValueType,
             properties,
-            isNoPatternResultAttribute,
+            noResultPattern,
             entityCollections
         );
-    }
-
-    private static List<EntityCollectionInfo> ExtractEntityCollections(
-        ClassDeclarationSyntax classSyntax,
-        GeneratorSyntaxContext context)
-    {
-        var existingReadOnlyCollectionElements = classSyntax.Members
-            .OfType<PropertyDeclarationSyntax>()
-            .Select(p => context.SemanticModel.GetTypeInfo(p.Type).Type as INamedTypeSymbol)
-            .Where(t => t is not null && t.IsGenericType)
-            .Where(t => t!.ConstructedFrom.ToDisplayString() == "System.Collections.Generic.IReadOnlyCollection<T>")
-            .Select(t => t!.TypeArguments[0].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat));
-
-        var fields = classSyntax.Members
-            .OfType<FieldDeclarationSyntax>()
-            .SelectMany(f => f.Declaration.Variables.Select(v => (Field: f, Var: v)))
-            .Select(x =>
-            {
-                var fieldType = context.SemanticModel.GetTypeInfo(x.Field.Declaration.Type).Type;
-                return (x.Field, x.Var, FieldType: fieldType);
-            })
-            .ToList();
-
-        var hashSetFields = fields
-            .Select(x => new
-            {
-                FieldName = x.Var.Identifier.Text,
-                FieldSyntax = x.Field,
-                FieldType = x.FieldType as INamedTypeSymbol
-            })
-            .Where(x =>
-                x.FieldType is { IsGenericType: true } &&
-                x.FieldType.ConstructedFrom.ToDisplayString() == "System.Collections.Generic.HashSet<T>")
-            .Where(x =>
-            {
-                var fieldSymbol =
-                    context.SemanticModel.GetDeclaredSymbol(x.FieldSyntax.Declaration.Variables[0]) as IFieldSymbol;
-                return fieldSymbol is null || !HasExcludeFromGenerationAttribute(fieldSymbol);
-            })
-            .Select(x => new
-            {
-                x.FieldName,
-                ElementType = x.FieldType!.TypeArguments[0] as INamedTypeSymbol
-            })
-            .Where(x => x.ElementType is not null)
-            .ToList();
-
-        var collections = new List<EntityCollectionInfo>();
-
-        foreach (var field in hashSetFields)
-        {
-            var elementType = field.ElementType!;
-            var elementTypeName = elementType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
-
-            var entityIdType = TryGetEntityIdType(elementType);
-            if (string.IsNullOrWhiteSpace(entityIdType))
-                continue;
-
-            var propertyName = ToPascalPlural(TrimUnderscore(field.FieldName));
-            var shouldGenerateProperty = !existingReadOnlyCollectionElements.Contains(elementTypeName);
-
-            var entityArgs = GetEntityCtorArgsFromPublicProperties(elementType);
-
-            var elementNoResultPattern = HasNoResultPatternAttribute(elementType);
-            var elementIsResultPattern = !elementNoResultPattern;
-
-            collections.Add(new EntityCollectionInfo(
-                propertyName,
-                field.FieldName,
-                elementTypeName,
-                entityIdType,
-                shouldGenerateProperty,
-                entityArgs,
-                elementIsResultPattern
-            ));
-        }
-
-        return collections;
-    }
-
-    private static bool HasExcludeFromGenerationAttribute(ISymbol symbol)
-        => symbol.GetAttributes()
-            .Any(a => a.AttributeClass?.ToDisplayString() == typeof(ExcludeFromGenerationAttribute).FullName);
-
-    private static bool HasNoResultPatternAttribute(ISymbol symbol)
-        => symbol.GetAttributes()
-            .Any(a => a.AttributeClass?.ToDisplayString() == typeof(NoResultPatternAttribute).FullName);
-
-    private static List<ParameterInfo> GetEntityCtorArgsFromPublicProperties(INamedTypeSymbol entityType)
-    {
-        return entityType
-            .GetMembers()
-            .OfType<IPropertySymbol>()
-            .Where(p => p.DeclaredAccessibility == Accessibility.Public)
-            .Where(p => !p.IsStatic)
-            .Where(p => p.Name != "Id")
-            .OrderBy(p => p.Locations.FirstOrDefault()?.SourceSpan.Start ?? int.MaxValue)
-            .Select(p => new ParameterInfo(
-                p.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat),
-                ToCamel(p.Name)
-            ))
-            .ToList();
-    }
-
-    private static string ToCamel(string s)
-        => string.IsNullOrWhiteSpace(s) ? s : char.ToLowerInvariant(s[0]) + s.Substring(1);
-
-    private static string ToPascalPlural(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            return name;
-
-        return char.ToUpperInvariant(name[0]) + name.Substring(1);
-    }
-
-    private static string ToSingular(string pascalPluralName)
-    {
-        if (string.IsNullOrWhiteSpace(pascalPluralName))
-            return pascalPluralName;
-
-        return pascalPluralName.EndsWith("s", StringComparison.Ordinal)
-            ? pascalPluralName.Substring(0, pascalPluralName.Length - 1)
-            : pascalPluralName;
-    }
-
-    private static string TrimUnderscore(string name) =>
-        name.StartsWith("_", StringComparison.Ordinal) ? name.Substring(1, name.Length - 1) : name;
-
-    private static string? TryGetEntityIdType(INamedTypeSymbol entityTypeSymbol)
-    {
-        var entityAttr = entityTypeSymbol.GetAttributes()
-            .FirstOrDefault(a => a.AttributeClass?.ToDisplayString() == typeof(EntityAttribute).FullName);
-
-        if (entityAttr is null || entityAttr.ConstructorArguments.Length < 1)
-            return null;
-
-        var arg = entityAttr.ConstructorArguments[0];
-
-        if (arg.Kind != TypedConstantKind.Type || arg.Value is not INamedTypeSymbol idTypeSym)
-            return null;
-
-        return idTypeSym.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
-    }
-
-    private static string GetIdValueExpression(ClassToAugment info)
-    {
-        var valueExpr = info.TypeArg.ToGeneratingExpression();
-
-        if (valueExpr is not null)
-            return valueExpr;
-
-        if (info is { IsAggregateRootIdRecord: false, IsAggregateRootIdClass: false } ||
-            string.IsNullOrEmpty(info.IdValueType))
-            return "default";
-
-        valueExpr = info.IdValueType.ToGeneratingExpression();
-
-        return $"new {info.TypeArg}({valueExpr})";
-    }
-
-    public sealed class ClassToAugment(
-        string name,
-        string typeArg,
-        string? ns,
-        List<string> usings,
-        string? idTypeFullName,
-        bool isAggregateRootIdRecord,
-        bool isAggregateRootIdClass,
-        string? idValueType,
-        List<PropertyInfo> properties,
-        bool noResultPattern,
-        List<EntityCollectionInfo> entityCollections)
-    {
-        public string Name { get; } = name;
-        public string TypeArg { get; } = typeArg;
-        public string? Namespace { get; } = ns;
-        public List<string> Usings { get; } = usings;
-        public string? IdTypeFullName { get; } = idTypeFullName;
-        public bool IsAggregateRootIdRecord { get; } = isAggregateRootIdRecord;
-        public bool IsAggregateRootIdClass { get; } = isAggregateRootIdClass;
-        public string? IdValueType { get; } = idValueType;
-        public List<PropertyInfo> Properties { get; } = properties;
-        public bool NoResultPattern { get; } = noResultPattern;
-        public List<EntityCollectionInfo> EntityCollections { get; } = entityCollections;
-    }
-
-    public sealed class PropertyInfo(string type, string name, bool autoGenerated)
-    {
-        public string Type { get; } = type;
-        public string Name { get; } = name;
-        public bool AutoGenerated { get; set; } = autoGenerated;
-    }
-
-    public sealed class EntityCollectionInfo(
-        string propertyName,
-        string backingFieldName,
-        string elementType,
-        string elementIdType,
-        bool generateProperty,
-        List<ParameterInfo> ctorArgs,
-        bool elementIsResultPattern)
-    {
-        public string PropertyName { get; } = propertyName;
-        public string BackingFieldName { get; } = backingFieldName;
-        public string ElementType { get; } = elementType;
-        public string ElementIdType { get; } = elementIdType;
-        public bool GenerateProperty { get; } = generateProperty;
-
-        public List<ParameterInfo> CtorArgs { get; } = ctorArgs;
-
-        public bool ElementIsResultPattern { get; } = elementIsResultPattern;
-    }
-
-    public sealed class ParameterInfo(string type, string name)
-    {
-        public string Type { get; } = type;
-        public string Name { get; } = name;
     }
 }

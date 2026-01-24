@@ -1,5 +1,6 @@
 ﻿using DomainSmith.Abstraction.Generators;
 using System.Text;
+using DomainSmith.Abstraction.Common.Models;
 
 namespace DomainSmith.ValueObject.Generators;
 
@@ -31,9 +32,9 @@ internal sealed class ValueObjectBuilder : BaseBuilder
         _extensionReference.Append("Extensions");
     }
 
-    internal void SetProperties(List<(string Type, string Name)> properties)
+    internal void SetProperties(List<PropertyInfo> properties)
     {
-        _properties = [.. properties];
+        _properties = [.. properties.Select(p => (p.Type, p.Name))];
     }
 
     internal void SetIsResultPattern(bool isResultPattern)
