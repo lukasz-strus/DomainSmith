@@ -77,4 +77,6 @@ partial class TestAggregateRoot : AggregateRoot<Guid>
 
     static partial void OnCreatingName2(ref string name2, ref bool canCreate);
     partial void OnUpdatingName2(ref string name2, ref bool canUpdate);
+
+    
 }                 
