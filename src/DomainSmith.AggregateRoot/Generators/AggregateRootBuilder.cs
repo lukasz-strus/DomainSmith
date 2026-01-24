@@ -250,7 +250,7 @@ internal sealed class AggregateRootBuilder : BaseBuilder
             if (c.GenerateProperty)
             {
                 sb.AppendLine(
-                    $"\t[ExcludeFromGeneration] public IReadOnlyCollection<{c.ElementType}> {c.PropertyName} => {c.BackingFieldName};");
+                    $"\tpublic IReadOnlyCollection<{c.ElementType}> {c.PropertyName} => {c.BackingFieldName};");
                 sb.AppendLine();
             }
 
@@ -258,9 +258,12 @@ internal sealed class AggregateRootBuilder : BaseBuilder
             var updateName = $"Update{c.ElementType}";
             var deleteName = $"Delete{c.ElementType}";
 
-            sb.AppendLine($"\tpublic Result<{c.ElementType}> {addName}(params object[] args)");
+            var argsDecl = string.Join(", ", c.CtorArgs.Select(a => $"{a.Type} {a.Name}"));
+            var argsCall = string.Join(", ", c.CtorArgs.Select(a => a.Name));
+
+            sb.AppendLine($"\tpublic Result<{c.ElementType}> {addName}({argsDecl})");
             sb.AppendLine("\t{");
-            sb.AppendLine($"\t\tvar result = {c.ElementType}.Create(args);");
+            sb.AppendLine($"\t\tvar result = {c.ElementType}.Create({argsCall});");
             sb.AppendLine("\t\tif (result.IsFailure)");
             sb.AppendLine("\t\t\treturn result;");
             sb.AppendLine();
@@ -271,13 +274,13 @@ internal sealed class AggregateRootBuilder : BaseBuilder
             sb.AppendLine("\t}");
             sb.AppendLine();
 
-            sb.AppendLine($"\tpublic Result {updateName}({c.ElementIdType} id, params object[] args)");
+            sb.AppendLine($"\tpublic Result {updateName}({c.ElementIdType} id, {argsDecl})");
             sb.AppendLine("\t{");
             sb.AppendLine($"\t\tvar entity = {c.BackingFieldName}.FirstOrDefault(a => a.Id == id);");
             sb.AppendLine("\t\tif (entity is null)");
             sb.AppendLine($"\t\t\treturn Result.Failure(new Error(\"{ClassName}.{c.PropertyName}\", \"Not found\"));");
             sb.AppendLine();
-            sb.AppendLine("\t\tvar result = entity.Update(args);");
+            sb.AppendLine($"\t\tvar result = entity.Update({argsCall});");
             sb.AppendLine();
             sb.AppendLine("\t\treturn result;");
             sb.AppendLine("\t}");

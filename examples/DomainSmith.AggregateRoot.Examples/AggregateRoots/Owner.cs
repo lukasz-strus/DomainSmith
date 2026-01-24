@@ -1,6 +1,5 @@
 ﻿using DomainSmith.Abstraction.Common;
 using DomainSmith.Abstraction.Core.Primitives;
-using DomainSmith.Abstraction.Core.Result;
 using DomainSmith.Entity;
 
 namespace DomainSmith.AggregateRoot.Examples.AggregateRoots;
@@ -23,7 +22,6 @@ public partial class Car
 public partial class Owner
 {
     private readonly HashSet<Car> _cars = [];
-
 
     public string FirstName { get; private set; }
     public string LastName { get; private set; }

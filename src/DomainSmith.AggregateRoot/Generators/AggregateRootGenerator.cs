@@ -1,9 +1,9 @@
-﻿using DomainSmith.Abstraction.Common;
-using DomainSmith.Abstraction.Generators;
+﻿using DomainSmith.Abstraction.Generators;
 using DomainSmith.Abstraction.Helpers;
 using DomainSmith.Entity;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using DomainSmith.Abstraction.Common;
 
 namespace DomainSmith.AggregateRoot.Generators;
 
@@ -197,29 +197,48 @@ internal sealed class
                 continue;
 
             var propertyName = ToPascalPlural(TrimUnderscore(field.FieldName));
-
             var shouldGenerateProperty = !existingReadOnlyCollectionElements.Contains(elementTypeName);
+
+            var entityArgs = GetEntityCtorArgsFromPublicProperties(elementType);
 
             collections.Add(new EntityCollectionInfo(
                 propertyName,
                 field.FieldName,
                 elementTypeName,
                 entityIdType,
-                shouldGenerateProperty
+                shouldGenerateProperty,
+                entityArgs
             ));
         }
 
         return collections;
     }
 
+    private static List<ParameterInfo> GetEntityCtorArgsFromPublicProperties(INamedTypeSymbol entityType)
+    {
+        return entityType
+            .GetMembers()
+            .OfType<IPropertySymbol>()
+            .Where(p => p.DeclaredAccessibility == Accessibility.Public)
+            .Where(p => !p.IsStatic)
+            .Where(p => p.Name != "Id")
+            .OrderBy(p => p.Locations.FirstOrDefault()?.SourceSpan.Start ?? int.MaxValue)
+            .Select(p => new ParameterInfo(
+                p.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat),
+                ToCamel(p.Name)
+            ))
+            .ToList();
+    }
+
+    private static string ToCamel(string s)
+        => string.IsNullOrWhiteSpace(s) ? s : char.ToLowerInvariant(s[0]) + s.Substring(1);
+
     private static string ToPascalPlural(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return name;
 
-        var pascal = char.ToUpperInvariant(name[0]) + name.Substring(1);
-
-        return pascal.EndsWith("s", StringComparison.Ordinal) ? pascal : pascal + "s";
+        return char.ToUpperInvariant(name[0]) + name.Substring(1);
     }
 
     private static string TrimUnderscore(string name) =>
@@ -295,12 +314,21 @@ internal sealed class
         string backingFieldName,
         string elementType,
         string elementIdType,
-        bool generateProperty)
+        bool generateProperty,
+        List<ParameterInfo> ctorArgs)
     {
         public string PropertyName { get; } = propertyName;
         public string BackingFieldName { get; } = backingFieldName;
         public string ElementType { get; } = elementType;
         public string ElementIdType { get; } = elementIdType;
         public bool GenerateProperty { get; } = generateProperty;
+
+        public List<ParameterInfo> CtorArgs { get; } = ctorArgs;
+    }
+
+    public sealed class ParameterInfo(string type, string name)
+    {
+        public string Type { get; } = type;
+        public string Name { get; } = name;
     }
 }
