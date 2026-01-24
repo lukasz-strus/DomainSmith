@@ -1,6 +1,7 @@
 ﻿using DomainSmith.Abstraction.Common;
 using DomainSmith.Abstraction.Generators;
 using DomainSmith.Abstraction.Helpers;
+using DomainSmith.Entity;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -24,6 +25,7 @@ internal sealed class
         builder.SetExtensionName(info.Name);
         builder.SetProperties(info.Properties);
         builder.SetIsResultPattern(!info.NoResultPattern);
+        builder.SetEntityCollections(info.EntityCollections);
 
         var source = builder.Build();
         builder.Clear();
@@ -128,6 +130,8 @@ internal sealed class
 
         var isNoPatternResultAttribute = isNoResultPatternLocal || isNoResultPatternAssembly;
 
+        var entityCollections = ExtractEntityCollections(classSyntax, context);
+
         return new ClassToAugment(
             name,
             typeArg,
@@ -138,8 +142,103 @@ internal sealed class
             isAggregateRootIdClass,
             idValueType,
             properties,
-            isNoPatternResultAttribute
+            isNoPatternResultAttribute,
+            entityCollections
         );
+    }
+
+    private static List<EntityCollectionInfo> ExtractEntityCollections(
+        ClassDeclarationSyntax classSyntax,
+        GeneratorSyntaxContext context)
+    {
+        var existingReadOnlyCollectionElements = classSyntax.Members
+            .OfType<PropertyDeclarationSyntax>()
+            .Select(p => context.SemanticModel.GetTypeInfo(p.Type).Type as INamedTypeSymbol)
+            .Where(t => t is not null && t.IsGenericType)
+            .Where(t => t!.ConstructedFrom.ToDisplayString() == "System.Collections.Generic.IReadOnlyCollection<T>")
+            .Select(t => t!.TypeArguments[0].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat));
+
+        var fields = classSyntax.Members
+            .OfType<FieldDeclarationSyntax>()
+            .SelectMany(f => f.Declaration.Variables.Select(v => (Field: f, Var: v)))
+            .Select(x =>
+            {
+                var fieldType = context.SemanticModel.GetTypeInfo(x.Field.Declaration.Type).Type;
+                return (x.Field, x.Var, FieldType: fieldType);
+            })
+            .ToList();
+
+        var hashSetFields = fields
+            .Select(x => new
+            {
+                FieldName = x.Var.Identifier.Text,
+                FieldType = x.FieldType as INamedTypeSymbol
+            })
+            .Where(x =>
+                x.FieldType is { IsGenericType: true } &&
+                x.FieldType.ConstructedFrom.ToDisplayString() == "System.Collections.Generic.HashSet<T>")
+            .Select(x => new
+            {
+                x.FieldName,
+                ElementType = x.FieldType!.TypeArguments[0] as INamedTypeSymbol
+            })
+            .Where(x => x.ElementType is not null)
+            .ToList();
+
+        var collections = new List<EntityCollectionInfo>();
+
+        foreach (var field in hashSetFields)
+        {
+            var elementType = field.ElementType!;
+            var elementTypeName = elementType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+
+            var entityIdType = TryGetEntityIdType(elementType);
+            if (string.IsNullOrWhiteSpace(entityIdType))
+                continue;
+
+            var propertyName = ToPascalPlural(TrimUnderscore(field.FieldName));
+
+            var shouldGenerateProperty = !existingReadOnlyCollectionElements.Contains(elementTypeName);
+
+            collections.Add(new EntityCollectionInfo(
+                propertyName,
+                field.FieldName,
+                elementTypeName,
+                entityIdType,
+                shouldGenerateProperty
+            ));
+        }
+
+        return collections;
+    }
+
+    private static string ToPascalPlural(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return name;
+
+        var pascal = char.ToUpperInvariant(name[0]) + name.Substring(1);
+
+        return pascal.EndsWith("s", StringComparison.Ordinal) ? pascal : pascal + "s";
+    }
+
+    private static string TrimUnderscore(string name) =>
+        name.StartsWith("_", StringComparison.Ordinal) ? name.Substring(1, name.Length - 1) : name;
+
+    private static string? TryGetEntityIdType(INamedTypeSymbol entityTypeSymbol)
+    {
+        var entityAttr = entityTypeSymbol.GetAttributes()
+            .FirstOrDefault(a => a.AttributeClass?.ToDisplayString() == typeof(EntityAttribute).FullName);
+
+        if (entityAttr is null || entityAttr.ConstructorArguments.Length < 1)
+            return null;
+
+        var arg = entityAttr.ConstructorArguments[0];
+
+        if (arg.Kind != TypedConstantKind.Type || arg.Value is not INamedTypeSymbol idTypeSym)
+            return null;
+
+        return idTypeSym.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
     }
 
     private static string GetIdValueExpression(ClassToAugment info)
@@ -168,7 +267,8 @@ internal sealed class
         bool isAggregateRootIdClass,
         string? idValueType,
         List<PropertyInfo> properties,
-        bool noResultPattern)
+        bool noResultPattern,
+        List<EntityCollectionInfo> entityCollections)
     {
         public string Name { get; } = name;
         public string TypeArg { get; } = typeArg;
@@ -180,13 +280,27 @@ internal sealed class
         public string? IdValueType { get; } = idValueType;
         public List<PropertyInfo> Properties { get; } = properties;
         public bool NoResultPattern { get; } = noResultPattern;
+        public List<EntityCollectionInfo> EntityCollections { get; } = entityCollections;
     }
 
     public sealed class PropertyInfo(string type, string name, bool autoGenerated)
     {
         public string Type { get; } = type;
         public string Name { get; } = name;
-
         public bool AutoGenerated { get; set; } = autoGenerated;
+    }
+
+    public sealed class EntityCollectionInfo(
+        string propertyName,
+        string backingFieldName,
+        string elementType,
+        string elementIdType,
+        bool generateProperty)
+    {
+        public string PropertyName { get; } = propertyName;
+        public string BackingFieldName { get; } = backingFieldName;
+        public string ElementType { get; } = elementType;
+        public string ElementIdType { get; } = elementIdType;
+        public bool GenerateProperty { get; } = generateProperty;
     }
 }
