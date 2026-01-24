@@ -201,18 +201,26 @@ internal sealed class
 
             var entityArgs = GetEntityCtorArgsFromPublicProperties(elementType);
 
+            var elementNoResultPattern = HasNoResultPatternAttribute(elementType);
+            var elementIsResultPattern = !elementNoResultPattern;
+
             collections.Add(new EntityCollectionInfo(
                 propertyName,
                 field.FieldName,
                 elementTypeName,
                 entityIdType,
                 shouldGenerateProperty,
-                entityArgs
+                entityArgs,
+                elementIsResultPattern
             ));
         }
 
         return collections;
     }
+
+    private static bool HasNoResultPatternAttribute(ISymbol symbol)
+        => symbol.GetAttributes()
+            .Any(a => a.AttributeClass?.ToDisplayString() == typeof(NoResultPatternAttribute).FullName);
 
     private static List<ParameterInfo> GetEntityCtorArgsFromPublicProperties(INamedTypeSymbol entityType)
     {
@@ -325,7 +333,8 @@ internal sealed class
         string elementType,
         string elementIdType,
         bool generateProperty,
-        List<ParameterInfo> ctorArgs)
+        List<ParameterInfo> ctorArgs,
+        bool elementIsResultPattern)
     {
         public string PropertyName { get; } = propertyName;
         public string BackingFieldName { get; } = backingFieldName;
@@ -334,6 +343,8 @@ internal sealed class
         public bool GenerateProperty { get; } = generateProperty;
 
         public List<ParameterInfo> CtorArgs { get; } = ctorArgs;
+
+        public bool ElementIsResultPattern { get; } = elementIsResultPattern;
     }
 
     public sealed class ParameterInfo(string type, string name)

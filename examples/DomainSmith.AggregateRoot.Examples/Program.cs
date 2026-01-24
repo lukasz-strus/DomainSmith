@@ -2,9 +2,9 @@
 
 Console.WriteLine("Start Testu");
 
-var result = Owner.Create("Łukasz", "Strus", "lukasz.strus@gmail.com",
-    new Address("Ulica", "Warszawa", "mazowieckie", "00-000"));
+//var result = Owner.Create("Łukasz", "Strus", "lukasz.strus@gmail.com",
+//    new Address("Ulica", "Warszawa", "mazowieckie", "00-000"));
 
-var owner = result.Value();
+//var owner = result.Value();
 
-Console.WriteLine($"Owner created: {owner.FirstName} {owner.LastName}, email: {owner.Email}");
+//Console.WriteLine($"Owner created: {owner.FirstName} {owner.LastName}, email: {owner.Email}");

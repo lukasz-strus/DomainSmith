@@ -154,8 +154,11 @@ internal sealed class AggregateRootBuilder : BaseBuilder
         if (_entityCollections.Count > 0)
         {
             Usings.Append("\nusing System.Linq;");
-            Usings.Append("\nusing DomainSmith.Abstraction.Common;");
-            Usings.Append("\nusing DomainSmith.Abstraction.Core.Result;");
+            if (_isResultPattern)
+            {
+                Usings.Append("\nusing DomainSmith.Abstraction.Common;");
+                Usings.Append("\nusing DomainSmith.Abstraction.Core.Result;");
+            }
         }
 
         var entityCollectionsMembersStr = BuildEntityCollectionsMembers();
@@ -261,41 +264,114 @@ internal sealed class AggregateRootBuilder : BaseBuilder
             var argsDecl = string.Join(", ", c.CtorArgs.Select(a => $"{a.Type} {a.Name}"));
             var argsCall = string.Join(", ", c.CtorArgs.Select(a => a.Name));
 
-            sb.AppendLine($"\tpublic Result<{c.ElementType}> {addName}({argsDecl})");
-            sb.AppendLine("\t{");
-            sb.AppendLine($"\t\tvar result = {c.ElementType}.Create({argsCall});");
-            sb.AppendLine("\t\tif (result.IsFailure)");
-            sb.AppendLine("\t\t\treturn result;");
-            sb.AppendLine();
-            sb.AppendLine("\t\tvar entity = result.Value();");
-            sb.AppendLine($"\t\t{c.BackingFieldName}.Add(entity);");
-            sb.AppendLine();
-            sb.AppendLine("\t\treturn entity;");
-            sb.AppendLine("\t}");
-            sb.AppendLine();
+            if (_isResultPattern)
+            {
+                // Owner zwraca Result-y
+                if (c.ElementIsResultPattern)
+                {
+                    // element też zwraca Result
+                    sb.AppendLine($"\tpublic Result<{c.ElementType}> {addName}({argsDecl})");
+                    sb.AppendLine("\t{");
+                    sb.AppendLine($"\t\tvar result = {c.ElementType}.Create({argsCall});");
+                    sb.AppendLine("\t\tif (result.IsFailure)");
+                    sb.AppendLine("\t\t\treturn result;");
+                    sb.AppendLine();
+                    sb.AppendLine("\t\tvar entity = result.Value();");
+                    sb.AppendLine($"\t\t{c.BackingFieldName}.Add(entity);");
+                    sb.AppendLine();
+                    sb.AppendLine("\t\treturn entity;");
+                    sb.AppendLine("\t}");
+                    sb.AppendLine();
 
-            sb.AppendLine($"\tpublic Result {updateName}({c.ElementIdType} id, {argsDecl})");
-            sb.AppendLine("\t{");
-            sb.AppendLine($"\t\tvar entity = {c.BackingFieldName}.FirstOrDefault(a => a.Id == id);");
-            sb.AppendLine("\t\tif (entity is null)");
-            sb.AppendLine($"\t\t\treturn Result.Failure(new Error(\"{ClassName}.{c.PropertyName}\", \"Not found\"));");
-            sb.AppendLine();
-            sb.AppendLine($"\t\tvar result = entity.Update({argsCall});");
-            sb.AppendLine();
-            sb.AppendLine("\t\treturn result;");
-            sb.AppendLine("\t}");
-            sb.AppendLine();
+                    sb.AppendLine($"\tpublic Result {updateName}({c.ElementIdType} id, {argsDecl})");
+                    sb.AppendLine("\t{");
+                    sb.AppendLine($"\t\tvar entity = {c.BackingFieldName}.FirstOrDefault(a => a.Id == id);");
+                    sb.AppendLine("\t\tif (entity is null)");
+                    sb.AppendLine(
+                        $"\t\t\treturn Result.Failure(new Error(\"{ClassName}.{c.PropertyName}\", \"Not found\"));");
+                    sb.AppendLine();
+                    sb.AppendLine($"\t\tvar result = entity.Update({argsCall});");
+                    sb.AppendLine();
+                    sb.AppendLine("\t\treturn result;");
+                    sb.AppendLine("\t}");
+                    sb.AppendLine();
+                }
+                else
+                {
+                    // element ma [NoResultPattern]: Create -> T?, Update -> void
+                    sb.AppendLine($"\tpublic Result<{c.ElementType}> {addName}({argsDecl})");
+                    sb.AppendLine("\t{");
+                    sb.AppendLine($"\t\tvar entity = {c.ElementType}.Create({argsCall});");
+                    sb.AppendLine("\t\tif (entity is null)");
+                    sb.AppendLine(
+                        $"\t\t\treturn Result.Failure<{c.ElementType}>(new Error(\"{c.ElementType}.Create\", \"Creation failed\"));");
+                    sb.AppendLine();
+                    sb.AppendLine($"\t\t{c.BackingFieldName}.Add(entity);");
+                    sb.AppendLine();
+                    sb.AppendLine("\t\treturn entity;");
+                    sb.AppendLine("\t}");
+                    sb.AppendLine();
 
-            sb.AppendLine($"\tpublic Result {deleteName}({c.ElementIdType} id)");
-            sb.AppendLine("\t{");
-            sb.AppendLine($"\t\tvar entity = {c.BackingFieldName}.FirstOrDefault(a => a.Id == id);");
-            sb.AppendLine("\t\tif (entity is null)");
-            sb.AppendLine($"\t\t\treturn Result.Failure(new Error(\"{ClassName}.{c.PropertyName}\", \"Not found\"));");
-            sb.AppendLine();
-            sb.AppendLine($"\t\t{c.BackingFieldName}.Remove(entity);");
-            sb.AppendLine();
-            sb.AppendLine("\t\treturn Result.Success();");
-            sb.AppendLine("\t}");
+                    sb.AppendLine($"\tpublic Result {updateName}({c.ElementIdType} id, {argsDecl})");
+                    sb.AppendLine("\t{");
+                    sb.AppendLine($"\t\tvar entity = {c.BackingFieldName}.FirstOrDefault(a => a.Id == id);");
+                    sb.AppendLine("\t\tif (entity is null)");
+                    sb.AppendLine(
+                        $"\t\t\treturn Result.Failure(new Error(\"{ClassName}.{c.PropertyName}\", \"Not found\"));");
+                    sb.AppendLine();
+                    sb.AppendLine($"\t\tentity.Update({argsCall});");
+                    sb.AppendLine();
+                    sb.AppendLine("\t\treturn Result.Success();");
+                    sb.AppendLine("\t}");
+                    sb.AppendLine();
+                }
+
+                sb.AppendLine($"\tpublic Result {deleteName}({c.ElementIdType} id)");
+                sb.AppendLine("\t{");
+                sb.AppendLine($"\t\tvar entity = {c.BackingFieldName}.FirstOrDefault(a => a.Id == id);");
+                sb.AppendLine("\t\tif (entity is null)");
+                sb.AppendLine(
+                    $"\t\t\treturn Result.Failure(new Error(\"{ClassName}.{c.PropertyName}\", \"Not found\"));");
+                sb.AppendLine();
+                sb.AppendLine($"\t\t{c.BackingFieldName}.Remove(entity);");
+                sb.AppendLine();
+                sb.AppendLine("\t\treturn Result.Success();");
+                sb.AppendLine("\t}");
+            }
+            else
+            {
+                // Owner ma [NoResultPattern] => metody kolekcji bez Result
+                sb.AppendLine($"\tpublic {c.ElementType}? {addName}({argsDecl})");
+                sb.AppendLine("\t{");
+                sb.AppendLine($"\t\tvar entity = {c.ElementType}.Create({argsCall});");
+                sb.AppendLine("\t\tif (entity is null)");
+                sb.AppendLine("\t\t\treturn null;");
+                sb.AppendLine();
+                sb.AppendLine($"\t\t{c.BackingFieldName}.Add(entity);");
+                sb.AppendLine();
+                sb.AppendLine("\t\treturn entity;");
+                sb.AppendLine("\t}");
+                sb.AppendLine();
+
+                sb.AppendLine($"\tpublic void {updateName}({c.ElementIdType} id, {argsDecl})");
+                sb.AppendLine("\t{");
+                sb.AppendLine($"\t\tvar entity = {c.BackingFieldName}.FirstOrDefault(a => a.Id == id);");
+                sb.AppendLine("\t\tif (entity is null)");
+                sb.AppendLine("\t\t\treturn;");
+                sb.AppendLine();
+                sb.AppendLine($"\t\tentity.Update({argsCall});");
+                sb.AppendLine("\t}");
+                sb.AppendLine();
+
+                sb.AppendLine($"\tpublic void {deleteName}({c.ElementIdType} id)");
+                sb.AppendLine("\t{");
+                sb.AppendLine($"\t\tvar entity = {c.BackingFieldName}.FirstOrDefault(a => a.Id == id);");
+                sb.AppendLine("\t\tif (entity is null)");
+                sb.AppendLine("\t\t\treturn;");
+                sb.AppendLine();
+                sb.AppendLine($"\t\t{c.BackingFieldName}.Remove(entity);");
+                sb.AppendLine("\t}");
+            }
         }
 
         return sb.ToString();
