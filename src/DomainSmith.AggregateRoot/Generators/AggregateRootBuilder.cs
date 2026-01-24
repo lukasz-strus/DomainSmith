@@ -341,27 +341,60 @@ internal sealed class AggregateRootBuilder : BaseBuilder
             else
             {
                 // Owner ma [NoResultPattern] => metody kolekcji bez Result
-                sb.AppendLine($"\tpublic {c.ElementType}? {addName}({argsDecl})");
-                sb.AppendLine("\t{");
-                sb.AppendLine($"\t\tvar entity = {c.ElementType}.Create({argsCall});");
-                sb.AppendLine("\t\tif (entity is null)");
-                sb.AppendLine("\t\t\treturn null;");
-                sb.AppendLine();
-                sb.AppendLine($"\t\t{c.BackingFieldName}.Add(entity);");
-                sb.AppendLine();
-                sb.AppendLine("\t\treturn entity;");
-                sb.AppendLine("\t}");
-                sb.AppendLine();
 
-                sb.AppendLine($"\tpublic void {updateName}({c.ElementIdType} id, {argsDecl})");
-                sb.AppendLine("\t{");
-                sb.AppendLine($"\t\tvar entity = {c.BackingFieldName}.FirstOrDefault(a => a.Id == id);");
-                sb.AppendLine("\t\tif (entity is null)");
-                sb.AppendLine("\t\t\treturn;");
-                sb.AppendLine();
-                sb.AppendLine($"\t\tentity.Update({argsCall});");
-                sb.AppendLine("\t}");
-                sb.AppendLine();
+                if (c.ElementIsResultPattern)
+                {
+                    // Element zwraca Result => mapujemy na T? / void
+                    sb.AppendLine($"\tpublic {c.ElementType}? {addName}({argsDecl})");
+                    sb.AppendLine("\t{");
+                    sb.AppendLine($"\t\tvar result = {c.ElementType}.Create({argsCall});");
+                    sb.AppendLine("\t\tif (result.IsFailure)");
+                    sb.AppendLine("\t\t\treturn null;");
+                    sb.AppendLine();
+                    sb.AppendLine("\t\tvar entity = result.Value();");
+                    sb.AppendLine($"\t\t{c.BackingFieldName}.Add(entity);");
+                    sb.AppendLine();
+                    sb.AppendLine("\t\treturn entity;");
+                    sb.AppendLine("\t}");
+                    sb.AppendLine();
+
+                    sb.AppendLine($"\tpublic void {updateName}({c.ElementIdType} id, {argsDecl})");
+                    sb.AppendLine("\t{");
+                    sb.AppendLine($"\t\tvar entity = {c.BackingFieldName}.FirstOrDefault(a => a.Id == id);");
+                    sb.AppendLine("\t\tif (entity is null)");
+                    sb.AppendLine("\t\t\treturn;");
+                    sb.AppendLine();
+                    sb.AppendLine($"\t\tvar result = entity.Update({argsCall});");
+                    sb.AppendLine("\t\tif (result.IsFailure)");
+                    sb.AppendLine("\t\t\treturn;");
+                    sb.AppendLine("\t}");
+                    sb.AppendLine();
+                }
+                else
+                {
+                    // Element ma [NoResultPattern] => Create: T?, Update: void (Twoja dotychczasowa wersja)
+                    sb.AppendLine($"\tpublic {c.ElementType}? {addName}({argsDecl})");
+                    sb.AppendLine("\t{");
+                    sb.AppendLine($"\t\tvar entity = {c.ElementType}.Create({argsCall});");
+                    sb.AppendLine("\t\tif (entity is null)");
+                    sb.AppendLine("\t\t\treturn null;");
+                    sb.AppendLine();
+                    sb.AppendLine($"\t\t{c.BackingFieldName}.Add(entity);");
+                    sb.AppendLine();
+                    sb.AppendLine("\t\treturn entity;");
+                    sb.AppendLine("\t}");
+                    sb.AppendLine();
+
+                    sb.AppendLine($"\tpublic void {updateName}({c.ElementIdType} id, {argsDecl})");
+                    sb.AppendLine("\t{");
+                    sb.AppendLine($"\t\tvar entity = {c.BackingFieldName}.FirstOrDefault(a => a.Id == id);");
+                    sb.AppendLine("\t\tif (entity is null)");
+                    sb.AppendLine("\t\t\treturn;");
+                    sb.AppendLine();
+                    sb.AppendLine($"\t\tentity.Update({argsCall});");
+                    sb.AppendLine("\t}");
+                    sb.AppendLine();
+                }
 
                 sb.AppendLine($"\tpublic void {deleteName}({c.ElementIdType} id)");
                 sb.AppendLine("\t{");
