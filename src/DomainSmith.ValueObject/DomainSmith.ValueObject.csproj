@@ -1,13 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	  <TargetFramework>netstandard2.0</TargetFramework>
-	  <ImplicitUsings>enable</ImplicitUsings>
-	  <LangVersion>latest</LangVersion>
-	  <Nullable>enable</Nullable>
-	  <Authors>Łukasz Strus</Authors>
-	  <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<IsPackable>true</IsPackable>
+		<PackageId>DomainSmith.ValueObject</PackageId>
+		<Authors>Łukasz Strus</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageDescription>Roslyn Source Generator for .NET that automates Domain-Driven Design patterns and Clean Architecture components.</PackageDescription>
+		<RepositoryUrl>https://github.com/Nairda015/GenWrap</RepositoryUrl>
+		<PackageTags>tests;NUnit;source-generators;json</PackageTags>
+		<Title>Source-generated extensions for Domain-Driven Design</Title>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" />
@@ -20,6 +29,12 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="DomainSmith.ValueObject.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<None Include="../../README.md" Pack="true" PackagePath="/" />
+		<None Include="../../icon.png" Pack="true" PackagePath="/" />
 	</ItemGroup>
 
 </Project>
