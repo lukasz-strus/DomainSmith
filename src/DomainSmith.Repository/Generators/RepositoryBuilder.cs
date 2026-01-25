@@ -34,7 +34,7 @@ internal sealed class RepositoryBuilder : BaseBuilder
 
                      Task AddAsync({{ClassName}} {{(ClassName.ToString().ToCamel())}}, CancellationToken cancellationToken = default);
 
-                     void Remove({{ClassName}} id);
+                     void Remove({{ClassName}} {{(ClassName.ToString().ToCamel())}});
                  }
                  """;
     }

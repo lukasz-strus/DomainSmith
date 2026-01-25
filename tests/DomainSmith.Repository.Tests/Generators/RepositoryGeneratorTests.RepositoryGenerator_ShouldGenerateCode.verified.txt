@@ -22,5 +22,5 @@ public interface IOwnerRepository
 
     Task AddAsync(Owner owner, CancellationToken cancellationToken = default);
 
-    void Remove(Owner id);
+    void Remove(Owner owner);
 }
