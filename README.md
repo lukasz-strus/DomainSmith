@@ -5,7 +5,7 @@
 
 Roslyn Source Generator for .NET that automates Domain-Driven Design patterns and Clean Architecture components.
 
-## What this is
+## General
 
 `DomainSmith` is a set of Roslyn source generators that generate DDD/Clean Architecture boilerplate **from simple domain types** annotated with attributes:
 
@@ -117,7 +117,7 @@ partial record Money
 
 - code that provides a consistent way to create and update the object based on defined properties,
 - factory/update methods like `Create(...)` and `Update(...)` (variants depend on `Result pattern`),
-- an extension/partial API for the type (the generator also tracks ìextension nameî and type reference).
+- an extension/partial API for the type (the generator also tracks ‚Äúextension name‚Äù and type reference).
 
 `Result pattern`:
 
@@ -169,7 +169,7 @@ public partial class Owner
 public record OwnerId(Guid Value) : EntityIdRecord<Guid>(Value);
 ```
 
-- a class annotated with `[Entity(typeof(SomeIdType))]` ñ the generator reads the ID type from the attribute argument,
+- a class annotated with `[Entity(typeof(SomeIdType))]` ‚Äì the generator reads the ID type from the attribute argument,
 - ID metadata (for example whether it is a `record`/`class` and the underlying value type) is used to tailor generation,
 - entity properties (excluding `[ExcludeFromGeneration]`),
 - `Result pattern` configuration.
@@ -327,7 +327,7 @@ public partial class Owner
 - a class annotated with `[AggregateRoot(typeof(SomeIdType))]` (similar to Entity),
 - aggregate properties (excluding `[ExcludeFromGeneration]`),
 - `Result pattern` configuration,
-- **EntityCollections** ñ the generator analyzes the class and detects entity collections for which it should generate collection-management APIs.
+- **EntityCollections** ‚Äì the generator analyzes the class and detects entity collections for which it should generate collection-management APIs.
 
 What gets generated:
 ```csharp
