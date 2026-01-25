@@ -21,7 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="DomainSmith.AggregateRoot.Tests" />
+		<InternalsVisibleTo Include="DomainSmith.Repository.Tests" />
 	</ItemGroup>
 
 </Project>
