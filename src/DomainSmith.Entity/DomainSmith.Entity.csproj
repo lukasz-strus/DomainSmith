@@ -16,6 +16,7 @@
 		<PackageTags>tests;NUnit;source-generators;json</PackageTags>
 		<Title>Source-generated extensions for Domain-Driven Design</Title>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 	</PropertyGroup>
 
 	<ItemGroup>
