@@ -8,7 +8,7 @@ public sealed class Maybe<T> : IEquatable<Maybe<T>>
 
     private Maybe(T value) => _value = value;
 
-    public static Maybe<T> None => new(default);
+    public static Maybe<T> None => new(default!);
 
     public bool HasValue => !HasNoValue;
 
@@ -41,7 +41,7 @@ public sealed class Maybe<T> : IEquatable<Maybe<T>>
             return false;
         }
 
-        return Value.Equals(other.Value);
+        return EqualityComparer<T>.Default.Equals(Value, other.Value);
     }
 
     public override bool Equals(object obj) =>
@@ -53,5 +53,5 @@ public sealed class Maybe<T> : IEquatable<Maybe<T>>
             _ => false
         };
 
-    public override int GetHashCode() => HasValue ? Value.GetHashCode() : 0;
+    public override int GetHashCode() => HasValue ? EqualityComparer<T>.Default.GetHashCode(_value!) : 0;
 }
