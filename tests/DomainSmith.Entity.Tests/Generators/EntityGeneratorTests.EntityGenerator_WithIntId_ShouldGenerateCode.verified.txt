@@ -25,9 +25,9 @@ partial class TestEntity : Entity<int>
         bool canCreate = true;
         OnCreatingAuto(, ref canCreate);
         OnCreating(, ref canCreate);
-    
+
         var result = new TestEntity(new Random().Next());
-                                 
+
         OnCreated(result, ref canCreate);
         if(!canCreate) return null;
 
@@ -35,16 +35,16 @@ partial class TestEntity : Entity<int>
 
         return result;
     }
-    
+
     internal void Update()
     {
         bool canUpdate = true;
         OnUpdatingAuto(, ref canUpdate);
         OnUpdating(, ref canUpdate);
+
         
         
-        
-        
+
         OnUpdated(ref canUpdate);
         if(!canUpdate)
         {
@@ -65,7 +65,7 @@ partial class TestEntity : Entity<int>
     {
         
     }
-    
+
     static partial void OnCreating(, ref bool canCreate);
     static partial void OnCreated(TestEntity result, ref bool canCreate);
 
@@ -77,4 +77,4 @@ partial class TestEntity : Entity<int>
 
     
     
-}                 
+}

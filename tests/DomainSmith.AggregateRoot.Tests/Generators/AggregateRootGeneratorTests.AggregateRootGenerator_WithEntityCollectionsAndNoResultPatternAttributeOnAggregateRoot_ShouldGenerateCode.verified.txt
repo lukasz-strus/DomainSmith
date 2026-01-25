@@ -27,9 +27,9 @@ partial class TestAggregateRoot : AggregateRoot<TestAggregateRootId>
         bool canCreate = true;
         OnCreatingAuto(ref firstname, ref canCreate);
         OnCreating(ref firstname, ref canCreate);
-    
+
         var result = new TestAggregateRoot(default, firstname);
-                                 
+
         OnCreated(result, ref canCreate);
         if(!canCreate) return null;
 
@@ -37,16 +37,16 @@ partial class TestAggregateRoot : AggregateRoot<TestAggregateRootId>
 
         return result;
     }
-    
+
     public void Update(string firstname)
     {
         bool canUpdate = true;
         OnUpdatingAuto(ref firstname, ref canUpdate);
         OnUpdating(ref firstname, ref canUpdate);
-        
+
         var tmpFirstName = FirstName;
         FirstName = firstname;
-        
+
         OnUpdated(ref canUpdate);
         if(!canUpdate)
         {
@@ -54,7 +54,7 @@ partial class TestAggregateRoot : AggregateRoot<TestAggregateRootId>
            return;
         }
         
-    
+
         return;
     }
 
@@ -67,7 +67,7 @@ partial class TestAggregateRoot : AggregateRoot<TestAggregateRootId>
     {
         OnUpdatingFirstName(ref firstname, ref canUpdate);
     }
-    
+
     static partial void OnCreating(ref string firstname, ref bool canCreate);
     static partial void OnCreated(TestAggregateRoot result, ref bool canCreate);
 
@@ -149,4 +149,4 @@ partial class TestAggregateRoot : AggregateRoot<TestAggregateRootId>
 		_oldCars.Remove(entity);
 	}
 
-}                 
+}
