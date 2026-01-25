@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11205.157 d18.0
+VisualStudioVersion = 18.0.11205.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -47,6 +47,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.AggregateRoot.Tests", "tests\DomainSmith.AggregateRoot.Tests\DomainSmith.AggregateRoot.Tests.csproj", "{9D58FDF2-195B-4BBD-9A4B-65036776F6F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.AggregateRoot.Examples", "examples\DomainSmith.AggregateRoot.Examples\DomainSmith.AggregateRoot.Examples.csproj", "{3B07A564-3444-4419-B5AB-755FCA6A4976}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.Repository", "src\DomainSmith.Repository\DomainSmith.Repository.csproj", "{44DC36F0-EA4A-4BD5-A750-8A90400C87AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.Repository.Tests", "tests\DomainSmith.Repository.Tests\DomainSmith.Repository.Tests.csproj", "{320D9223-AB5E-468F-858E-171142550C47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainSmith.Repository.Examples", "examples\DomainSmith.Repository.Examples\DomainSmith.Repository.Examples.csproj", "{14C49C21-352E-4A39-BE2B-0AB608D5691C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +108,18 @@ Global
 		{3B07A564-3444-4419-B5AB-755FCA6A4976}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B07A564-3444-4419-B5AB-755FCA6A4976}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B07A564-3444-4419-B5AB-755FCA6A4976}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44DC36F0-EA4A-4BD5-A750-8A90400C87AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44DC36F0-EA4A-4BD5-A750-8A90400C87AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44DC36F0-EA4A-4BD5-A750-8A90400C87AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44DC36F0-EA4A-4BD5-A750-8A90400C87AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{320D9223-AB5E-468F-858E-171142550C47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{320D9223-AB5E-468F-858E-171142550C47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{320D9223-AB5E-468F-858E-171142550C47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{320D9223-AB5E-468F-858E-171142550C47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14C49C21-352E-4A39-BE2B-0AB608D5691C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14C49C21-352E-4A39-BE2B-0AB608D5691C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14C49C21-352E-4A39-BE2B-0AB608D5691C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14C49C21-352E-4A39-BE2B-0AB608D5691C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,6 +140,9 @@ Global
 		{C50DD112-137E-471D-AB68-D6444ADDA295} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{9D58FDF2-195B-4BBD-9A4B-65036776F6F6} = {135EB3BA-BB78-43A8-8BD5-F221A9514FDF}
 		{3B07A564-3444-4419-B5AB-755FCA6A4976} = {8089AB3A-74F8-412D-81F9-8ED2A3EA5EC1}
+		{44DC36F0-EA4A-4BD5-A750-8A90400C87AD} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{320D9223-AB5E-468F-858E-171142550C47} = {135EB3BA-BB78-43A8-8BD5-F221A9514FDF}
+		{14C49C21-352E-4A39-BE2B-0AB608D5691C} = {8089AB3A-74F8-412D-81F9-8ED2A3EA5EC1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D5DB74A5-D8E6-4B19-B217-5A02834A0987}
