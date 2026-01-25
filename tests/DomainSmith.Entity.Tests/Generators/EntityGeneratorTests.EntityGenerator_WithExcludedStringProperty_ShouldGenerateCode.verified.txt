@@ -25,9 +25,9 @@ partial class TestEntity : Entity<Guid>
         bool canCreate = true;
         OnCreatingAuto(ref name2, ref canCreate);
         OnCreating(ref name2, ref canCreate);
-    
+
         var result = new TestEntity(Guid.NewGuid(), name2);
-                                 
+
         OnCreated(result, ref canCreate);
         if(!canCreate) return null;
 
@@ -35,16 +35,16 @@ partial class TestEntity : Entity<Guid>
 
         return result;
     }
-    
+
     internal void Update(string name2)
     {
         bool canUpdate = true;
         OnUpdatingAuto(ref name2, ref canUpdate);
         OnUpdating(ref name2, ref canUpdate);
-        
+
         var tmpName2 = Name2;
         Name2 = name2;
-        
+
         OnUpdated(ref canUpdate);
         if(!canUpdate)
         {
@@ -65,7 +65,7 @@ partial class TestEntity : Entity<Guid>
     {
         OnUpdatingName2(ref name2, ref canUpdate);
     }
-    
+
     static partial void OnCreating(ref string name2, ref bool canCreate);
     static partial void OnCreated(TestEntity result, ref bool canCreate);
 
@@ -77,4 +77,4 @@ partial class TestEntity : Entity<Guid>
 
     static partial void OnCreatingName2(ref string name2, ref bool canCreate);
     partial void OnUpdatingName2(ref string name2, ref bool canUpdate);
-}                 
+}

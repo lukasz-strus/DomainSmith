@@ -25,9 +25,9 @@ partial class TestAggregateRoot : AggregateRoot<string>
         bool canCreate = true;
         OnCreatingAuto(, ref canCreate);
         OnCreating(, ref canCreate);
-    
+
         var result = new TestAggregateRoot(Guid.NewGuid().ToString());
-                                 
+
         OnCreated(result, ref canCreate);
         if(!canCreate) return null;
 
@@ -35,16 +35,16 @@ partial class TestAggregateRoot : AggregateRoot<string>
 
         return result;
     }
-    
+
     public void Update()
     {
         bool canUpdate = true;
         OnUpdatingAuto(, ref canUpdate);
         OnUpdating(, ref canUpdate);
+
         
         
-        
-        
+
         OnUpdated(ref canUpdate);
         if(!canUpdate)
         {
@@ -52,7 +52,7 @@ partial class TestAggregateRoot : AggregateRoot<string>
            return;
         }
         
-    
+
         return;
     }
 
@@ -65,7 +65,7 @@ partial class TestAggregateRoot : AggregateRoot<string>
     {
         
     }
-    
+
     static partial void OnCreating(, ref bool canCreate);
     static partial void OnCreated(TestAggregateRoot result, ref bool canCreate);
 
@@ -77,4 +77,6 @@ partial class TestAggregateRoot : AggregateRoot<string>
 
     
     
-}                 
+
+    
+}

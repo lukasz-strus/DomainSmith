@@ -1,12 +1,13 @@
-﻿using DomainSmith.Abstraction.Common;
+﻿using DomainSmith.Abstraction.Extensions;
 using DomainSmith.Abstraction.Generators;
+using DomainSmith.ValueObject.Generators.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DomainSmith.ValueObject.Generators;
 
 [Generator]
-internal sealed class ValueObjectGenerator : BaseGenerator<MemberDeclarationSyntax, ValueObjectGenerator.ClassToAugment>
+internal sealed class ValueObjectGenerator : BaseGenerator<MemberDeclarationSyntax, ClassToAugment>
 {
     protected override string AttributeFullName => typeof(ValueObjectAttribute).FullName!;
 
@@ -39,63 +40,13 @@ internal sealed class ValueObjectGenerator : BaseGenerator<MemberDeclarationSynt
 
         if (syntax is null) return null;
 
-        var name = syntax.Identifier.Text;
+        var name = syntax.GetName();
+        var ns = syntax.GetNamespace();
+        var usings = syntax.GetUsings();
+        var allAttributes = syntax.GetAllAttributes(context);
+        var properties = syntax.GetAugmentableProperties(context);
+        var noResultPattern = allAttributes.HasNoResultPattern(context);
 
-        var ns = syntax.FirstAncestorOrSelf<NamespaceDeclarationSyntax>()?.Name.ToString()
-                 ?? syntax.FirstAncestorOrSelf<FileScopedNamespaceDeclarationSyntax>()?.Name.ToString();
-
-        var usings = syntax
-            .FirstAncestorOrSelf<CompilationUnitSyntax>()?
-            .DescendantNodesAndSelf()
-            .OfType<UsingDirectiveSyntax>()
-            .Select(x => $"using {x.Name};")
-            .Distinct()
-            .ToList() ?? [];
-
-        var attributeSyntax = syntax.AttributeLists
-            .SelectMany(list => list.Attributes)
-            .Select(attr => new
-            {
-                attr,
-                symbol = context.SemanticModel.GetSymbolInfo(attr).Symbol as IMethodSymbol
-            }).ToList();
-
-        var mainAttributeSyntaxes = attributeSyntax
-            .Where(x => x.symbol?.ContainingType.ToDisplayString() == AttributeFullName)
-            .Select(x => x.attr);
-
-        if (!mainAttributeSyntaxes.Any()) return null;
-
-        var isNoResultPatternAssembly = context.SemanticModel.Compilation.Assembly
-            .GetAttributes()
-            .Any(a => a.AttributeClass?.ToDisplayString() == typeof(NoResultPatternAttribute).FullName);
-
-        var isNoResultPatternLocal = attributeSyntax
-            .Any(x => x.symbol?.ContainingType.ToDisplayString() == typeof(NoResultPatternAttribute).FullName);
-
-        var isNoPatternResultAttribute = isNoResultPatternLocal || isNoResultPatternAssembly;
-
-        var properties = syntax.Members
-            .OfType<PropertyDeclarationSyntax>()
-            .Where(p => context.SemanticModel.GetDeclaredSymbol(p) is not null)
-            .Select(p => (Type: p.Type.ToString(), Name: p.Identifier.Text))
-            .ToList();
-
-
-        return new ClassToAugment(name, ns, usings, properties, isNoPatternResultAttribute);
-    }
-
-    public sealed class ClassToAugment(
-        string name,
-        string? ns,
-        List<string> usings,
-        List<(string Type, string Name)> properties,
-        bool noResultPattern)
-    {
-        public string Name { get; } = name;
-        public string? Namespace { get; } = ns;
-        public List<string> Usings { get; } = usings;
-        public List<(string Type, string Name)> Properties { get; } = properties;
-        public bool NoResultPattern { get; } = noResultPattern;
+        return new ClassToAugment(name, ns, usings, properties, noResultPattern);
     }
 }

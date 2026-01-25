@@ -26,9 +26,9 @@ partial class TestEntity : Entity<Guid>
 		Error error = Error.None;
         OnCreatingAuto(ref name, ref canCreate, ref error);
         OnCreating(ref name, ref canCreate, ref error);
-    
+
         var result = new TestEntity(Guid.NewGuid(), name);
-                                 
+
         OnCreated(result, ref canCreate, ref error);
         if(!canCreate) return Result.Failure<TestEntity>(error);
 
@@ -36,17 +36,17 @@ partial class TestEntity : Entity<Guid>
 
         return Result.Success(result);
     }
-    
+
     internal Result<bool> Update(string name)
     {
         bool canUpdate = true;
 		Error error = Error.None;
         OnUpdatingAuto(ref name, ref canUpdate, ref error);
         OnUpdating(ref name, ref canUpdate, ref error);
-        
+
         var tmpName = Name;
         Name = name;
-        
+
         OnUpdated(ref canUpdate, ref error);
         if(!canUpdate)
         {
@@ -67,7 +67,7 @@ partial class TestEntity : Entity<Guid>
     {
         OnUpdatingName(ref name, ref canUpdate, ref error);
     }
-    
+
     static partial void OnCreating(ref string name, ref bool canCreate, ref Error error);
     static partial void OnCreated(TestEntity result, ref bool canCreate, ref Error error);
 
@@ -79,4 +79,4 @@ partial class TestEntity : Entity<Guid>
 
     static partial void OnCreatingName(ref string name, ref bool canCreate, ref Error error);
     partial void OnUpdatingName(ref string name, ref bool canUpdate, ref Error error);
-}                 
+}

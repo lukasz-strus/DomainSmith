@@ -20,6 +20,7 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="DomainSmith.Entity.Tests" />
+		<InternalsVisibleTo Include="DomainSmith.AggregateRoot.Tests" />
 	</ItemGroup>
 
 </Project>

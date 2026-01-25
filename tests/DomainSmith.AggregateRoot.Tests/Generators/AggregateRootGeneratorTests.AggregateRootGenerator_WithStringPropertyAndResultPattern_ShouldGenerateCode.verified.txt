@@ -27,9 +27,9 @@ partial class TestAggregateRoot : AggregateRoot<Guid>
 		Error error = Error.None;
         OnCreatingAuto(ref name, ref canCreate, ref error);
         OnCreating(ref name, ref canCreate, ref error);
-    
+
         var result = new TestAggregateRoot(Guid.NewGuid(), name);
-                                 
+
         OnCreated(result, ref canCreate, ref error);
         if(!canCreate) return Result.Failure<TestAggregateRoot>(error);
 
@@ -37,17 +37,17 @@ partial class TestAggregateRoot : AggregateRoot<Guid>
 
         return Result.Success(result);
     }
-    
+
     public Result<bool> Update(string name)
     {
         bool canUpdate = true;
 		Error error = Error.None;
         OnUpdatingAuto(ref name, ref canUpdate, ref error);
         OnUpdating(ref name, ref canUpdate, ref error);
-        
+
         var tmpName = Name;
         Name = name;
-        
+
         OnUpdated(ref canUpdate, ref error);
         if(!canUpdate)
         {
@@ -55,7 +55,7 @@ partial class TestAggregateRoot : AggregateRoot<Guid>
            return Result.Failure<bool>(error);
         }
         
-    
+
         return Result.Success(true);
     }
 
@@ -68,7 +68,7 @@ partial class TestAggregateRoot : AggregateRoot<Guid>
     {
         OnUpdatingName(ref name, ref canUpdate, ref error);
     }
-    
+
     static partial void OnCreating(ref string name, ref bool canCreate, ref Error error);
     static partial void OnCreated(TestAggregateRoot result, ref bool canCreate, ref Error error);
 
@@ -80,4 +80,6 @@ partial class TestAggregateRoot : AggregateRoot<Guid>
 
     static partial void OnCreatingName(ref string name, ref bool canCreate, ref Error error);
     partial void OnUpdatingName(ref string name, ref bool canUpdate, ref Error error);
-}                 
+
+    
+}

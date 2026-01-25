@@ -16,6 +16,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\DomainSmith.Abstraction\DomainSmith.Abstraction.csproj" />
+		<ProjectReference Include="..\DomainSmith.Entity\DomainSmith.Entity.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
