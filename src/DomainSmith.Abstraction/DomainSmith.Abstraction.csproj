@@ -13,7 +13,7 @@
 	    <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	    <PackageIcon>icon.png</PackageIcon>
 	    <PackageDescription>Roslyn Source Generator for .NET that automates Domain-Driven Design patterns and Clean Architecture components.</PackageDescription>
-	    <RepositoryUrl>https://github.com/Nairda015/GenWrap</RepositoryUrl>
+	    <RepositoryUrl>https://github.com/lukasz-strus/DomainSmith</RepositoryUrl>
 	    <PackageTags>ddd;source-generators;clean-architecture</PackageTags>
 	    <Title>Source-generated extensions for Domain-Driven Design</Title>
 	    <PackageReadmeFile>README.md</PackageReadmeFile>
